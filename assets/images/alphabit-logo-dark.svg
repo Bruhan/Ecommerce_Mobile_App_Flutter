@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 165.51">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#linear-gradient-2);
+      }
+
+      .cls-2, .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-3 {
+        font-family: ArialMT, Arial;
+        font-size: 29.56px;
+      }
+
+      .cls-3, .cls-4 {
+        isolation: isolate;
+      }
+
+      .cls-5 {
+        fill: url(#linear-gradient-5);
+      }
+
+      .cls-6 {
+        fill: url(#linear-gradient-3);
+      }
+
+      .cls-7 {
+        fill: url(#linear-gradient);
+      }
+
+      .cls-8 {
+        fill: url(#linear-gradient-4);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="412.01" y1="128.55" x2="412.08" y2="117.89" gradientTransform="translate(0 165.28) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#30c7b3"/>
+      <stop offset="1" stop-color="#325cac"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="55.53" y1="130.32" x2="55.53" y2="74.04" gradientTransform="translate(0 165.28) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2fc0b6"/>
+      <stop offset="1" stop-color="#3058a9"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-3" x1="81.57" y1="121.62" x2="81.57" y2="86.44" gradientTransform="translate(0 165.28) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2fc0b6"/>
+      <stop offset="1" stop-color="#3058a9"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-4" x1="81.5" y1="80.4" x2="81.65" y2="44.37" gradientTransform="translate(0 165.28) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2fc0b6"/>
+      <stop offset="1" stop-color="#3058a9"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-5" x1="107.13" y1="91.69" x2="106.99" y2="36.79" gradientTransform="translate(0 165.28) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2fc0b6"/>
+      <stop offset="1" stop-color="#3058a9"/>
+    </linearGradient>
+  </defs>
+  <g class="cls-4">
+    <text class="cls-3" transform="translate(243.71 134.69)"><tspan x="0" y="0">TECHNOLOGIES</tspan></text>
+  </g>
+  <path class="cls-2" d="m136.12,74.76c0-13.26,9.85-22.37,22.65-22.37s22.56,8.84,22.56,23.2v22h-9.21v-21.73c0-9.48-5.8-14.64-13.44-14.64s-13.26,5.43-13.26,13.44,5.25,14.18,15.28,14.18h5.71l-2.76,8.75h-3.59c-14.55,0-23.94-10.04-23.94-22.83Z"/>
+  <path class="cls-2" d="m189.24,35.26h9.21v62.33h-9.21s0-62.33,0-62.33Z"/>
+  <path class="cls-2" d="m206.37,75.59c0-14.36,9.58-23.2,22.56-23.2s22.65,9.12,22.65,22.37-9.39,22.83-23.94,22.83h-3.59l-2.76-8.75h5.71c10.04,0,15.28-6.54,15.28-14.18s-5.89-13.44-13.26-13.44-13.44,5.16-13.44,14.64v40.14h-9.21v-40.42h0Z"/>
+  <path class="cls-2" d="m258.11,35.26h9.21v22.56c2.49-3.13,6.72-5.43,12.34-5.43,9.67,0,17.68,7.18,17.68,20.07v25.14h-9.21v-24.77c0-7.18-4.24-11.6-10.22-11.6-6.54,0-10.59,4.42-10.59,11.6v24.77h-9.21v-62.33h0Z"/>
+  <path class="cls-2" d="m303.32,74.76c0-13.26,9.85-22.37,22.65-22.37s22.56,8.84,22.56,23.2v22h-9.21v-21.73c0-9.48-5.8-14.64-13.44-14.64s-13.26,5.43-13.26,13.44,5.25,14.18,15.28,14.18h5.71l-2.76,8.75h-3.59c-14.55,0-23.94-10.04-23.94-22.83h0Z"/>
+  <path class="cls-2" d="m364.91,35.26v39.87c0,9.48,5.8,14.64,13.44,14.64s13.26-5.43,13.26-13.44-5.25-14.18-15.28-14.18h-5.71l2.76-8.75h3.59c14.55,0,23.94,10.04,23.94,22.83s-9.85,22.37-22.65,22.37-22.56-8.84-22.56-23.2v-40.14h9.21,0Z"/>
+  <path class="cls-7" d="m406.34,42.07c0-3.22,2.49-5.52,5.71-5.52s5.71,2.3,5.71,5.52-2.49,5.52-5.71,5.52-5.71-2.3-5.71-5.52Z"/>
+  <rect class="cls-2" x="407.45" y="53.4" width="9.21" height="44.19"/>
+  <path class="cls-2" d="m424.85,81.39v-38.03h9.21v10.04h13.44v8.75h-13.44v18.14c0,5.99,2.95,8.56,8.29,8.56h6.54l-2.67,8.75h-5.25c-10.59,0-16.11-6.26-16.11-16.2h0Z"/>
+  <g>
+    <path class="cls-1" d="m39.09,98.85l32.88-14.19v-44.52l-32.88-11.03v69.74Zm11.23-54.53l11.03,3.57v30.84l-11.03,3.98v-38.39Z"/>
+    <polygon class="cls-6" points="76.87 80.98 86.26 77.4 86.26 44.83 76.87 41.66 76.87 80.98"/>
+    <polygon class="cls-8" points="76.87 119.27 86.26 123.15 86.26 82.71 76.87 86.08 76.87 119.27"/>
+    <path class="cls-5" d="m90.86,79.55v44.42l32.37,10.72v-69.13l-32.37,13.99Zm21.75,40.16l-11.23-4.01v-30.48l11.23-4.03v38.53h0Z"/>
+  </g>
+</svg>
