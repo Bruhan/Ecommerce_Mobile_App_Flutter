@@ -43,12 +43,7 @@ class FilterSheet extends StatelessWidget {
                 style:
                     AppTextStyles.body.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(height: AppSpacing.sm),
-            Slider(
-              value: 19,
-              min: 0,
-              max: 100,
-              onChanged: (_) {},
-            ),
+            Slider(value: 19, min: 0, max: 100, onChanged: (_) {}),
             const SizedBox(height: AppSpacing.lg),
             Text('Size',
                 style:

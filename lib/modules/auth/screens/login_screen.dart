@@ -28,10 +28,18 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _onLogin() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    // TODO: call login API here
+
+    // Simulate backend delay
     await Future.delayed(const Duration(milliseconds: 700));
+
     setState(() => _loading = false);
-    // TODO: navigate to home on success
+
+    // ✅ Navigate to Home and clear back stack
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      Routes.home,
+      (route) => false,
+    );
   }
 
   @override
@@ -41,9 +49,8 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          // ✅ centers on big screens
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420), // ✅ mobile width
+            constraints: const BoxConstraints(maxWidth: 420),
             child: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
               child: SingleChildScrollView(
@@ -92,9 +99,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           onPressed: () => setState(() => _obscure = !_obscure),
                         ),
-                        validator: (v) => (v == null || v.isEmpty)
-                            ? 'Password is required'
-                            : null,
+                        validator: (v) {
+                          if (v == null || v.isEmpty) {
+                            return 'Password is required';
+                          }
+                          if (v.length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
+                          return null;
+                        },
                       ),
                       Align(
                         alignment: Alignment.centerRight,
@@ -104,10 +117,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: const Text('Reset your password'),
                         ),
                       ),
+                      SizedBox(height: AppSpacing.md),
                       AppButton(
-                        label: 'Login',
-                        onPressed: _onLogin,
-                        loading: _loading,
+                        label: _loading ? 'Loading...' : 'Login',
+                        onPressed: _loading ? null : _onLogin,
                       ),
                       SizedBox(height: AppSpacing.xl),
                       Row(
@@ -160,14 +173,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Wrap(
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            Text('Don’t have an account? ',
-                                style: AppTextStyles.body
-                                    .copyWith(color: AppColors.textSecondary)),
+                            Text(
+                              'Don’t have an account? ',
+                              style: AppTextStyles.body.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
                             GestureDetector(
                               onTap: () => Navigator.pushReplacementNamed(
-                                context,
-                                Routes.register,
-                              ),
+                                  context, Routes.register),
                               child: Text(
                                 'Join',
                                 style: AppTextStyles.body.copyWith(

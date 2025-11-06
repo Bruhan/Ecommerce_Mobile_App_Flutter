@@ -1,49 +1,57 @@
-// import 'package:flutter/material.dart';
-// import 'package:ecommerce_mobile/globals/theme.dart';
-// import 'package:ecommerce_mobile/widgets/app_bottom_nav.dart';
-// import 'discover_tab.dart';
-// import 'search_screen.dart';
-// import 'saved_screen.dart';
-// import 'cart_screen.dart';
-// import 'account_screen.dart';
+import 'package:flutter/material.dart';
+import '../../../globals/theme.dart';
+import '../../../widgets/app_bottom_nav.dart';
 
-// /// Holds the 5 tabs + bottom navigation like your Figma.
-// class HomeShell extends StatefulWidget {
-//   const HomeShell({super.key});
+import 'discover_tab.dart';
+import 'search_screen.dart';
+import 'saved_screen.dart';
+import 'cart_screen.dart';
+import 'account_screen.dart';
 
-//   @override
-//   State<HomeShell> createState() => _HomeShellState();
-// }
+class HomeShell extends StatefulWidget {
+  const HomeShell({super.key});
 
-// class _HomeShellState extends State<HomeShell> {
-//   int _index = 0;
+  @override
+  State<HomeShell> createState() => _HomeShellState();
+}
 
-//   final _pages = const [
-//     DiscoverTab(),
-//     SearchScreen(),
-//     SavedScreen(),
-//     CartScreen(),
-//     AccountScreen(),
-//   ];
+class _HomeShellState extends State<HomeShell> {
+  int _index = 0;
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SafeArea(
-//         child: Center(
-//           child: ConstrainedBox(
-//             constraints: const BoxConstraints(maxWidth: 420),
-//             child: Padding(
-//               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-//               child: _pages[_index],
-//             ),
-//           ),
-//         ),
-//       ),
-//       bottomNavigationBar: AppBottomNav(
-//         currentIndex: _index,
-//         onChanged: (i) => setState(() => _index = i),
-//       ),
-//     );
-//   }
-// }
+  final List<Widget> _pages = const [
+    DiscoverTab(),
+    SearchScreen(),
+    SavedScreen(),
+    CartScreen(),
+    AccountScreen(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final screen = _pages[_index];
+
+    // ✅ Apply padding only for DiscoverTab for consistent layout
+    final shouldApplyPadding = screen is DiscoverTab;
+
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: shouldApplyPadding
+                ? Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                    child: screen,
+                  )
+                : screen,
+          ),
+        ),
+      ),
+      bottomNavigationBar: AppBottomNav(
+        currentIndex: _index,
+        onChanged: (i) => setState(() => _index = i),
+      ),
+    );
+  }
+}

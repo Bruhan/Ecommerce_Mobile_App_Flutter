@@ -25,7 +25,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Future<void> _sendCode() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    await Future.delayed(const Duration(milliseconds: 600)); // TODO: API call
+    await Future.delayed(const Duration(milliseconds: 600));
     setState(() => _loading = false);
     Navigator.pushNamed(context, Routes.otp, arguments: _email.text.trim());
   }
@@ -33,50 +33,38 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).viewInsets.bottom;
-
     return Scaffold(
       appBar: AppBar(leading: const BackButton()),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(
-            AppSpacing.xl,
-            AppSpacing.xl,
-            AppSpacing.xl,
-            AppSpacing.xl + bottom,
-          ),
+          padding: EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.xl,
+              AppSpacing.xl, AppSpacing.xl + bottom),
           child: Form(
             key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Forgot password', style: AppTextStyles.h1),
-                SizedBox(height: AppSpacing.xs),
-                Text(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('Forgot password', style: AppTextStyles.h1),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
                   'Enter your email for the verification process.\nWe will send 4 digits code to your email.',
-                  style: AppTextStyles.subtitle,
-                ),
-                SizedBox(height: AppSpacing.xxl),
-                Text('Email', style: AppTextStyles.body),
-                SizedBox(height: AppSpacing.xs),
-                AppTextField(
-                  controller: _email,
-                  hint: 'cody.fisher45@example.com',
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'Email is required';
-                    final ok =
-                        RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v.trim());
-                    return ok ? null : 'Enter a valid email';
-                  },
-                ),
-                SizedBox(height: AppSpacing.xl),
-                AppButton(
-                  label: 'Send Code',
-                  onPressed: _sendCode,
-                  loading: _loading,
-                ),
-              ],
-            ),
+                  style: AppTextStyles.subtitle),
+              const SizedBox(height: AppSpacing.xxl),
+              Text('Email', style: AppTextStyles.body),
+              const SizedBox(height: AppSpacing.xs),
+              AppTextField(
+                controller: _email,
+                hint: 'cody.fisher45@example.com',
+                keyboardType: TextInputType.emailAddress,
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Email is required';
+                  final ok = RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v);
+                  return ok ? null : 'Enter a valid email';
+                },
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              AppButton(
+                  label: 'Send Code', onPressed: _sendCode, loading: _loading),
+            ]),
           ),
         ),
       ),
