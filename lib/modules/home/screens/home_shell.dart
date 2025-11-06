@@ -30,7 +30,6 @@ class _HomeShellState extends State<HomeShell> {
   Widget build(BuildContext context) {
     final screen = _pages[_index];
 
-    // ✅ Apply padding only for DiscoverTab for consistent layout
     final shouldApplyPadding = screen is DiscoverTab;
 
     return Scaffold(
