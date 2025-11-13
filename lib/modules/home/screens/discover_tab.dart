@@ -1,6 +1,6 @@
+// lib/modules/home/screens/discover_tab.dart
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
-import 'package:ecommerce_mobile/globals/responsive.dart';
 import 'package:ecommerce_mobile/routes/routes.dart';
 import 'package:ecommerce_mobile/widgets/product_card.dart';
 import 'package:ecommerce_mobile/widgets/app_text_field.dart';
@@ -19,85 +19,71 @@ class _DiscoverTabState extends State<DiscoverTab> {
 
   @override
   Widget build(BuildContext context) {
-    // Responsive helpers
-    final double horizontalPadding = Responsive.scaleWidth(context, AppSpacing.lg);
-    final double topPadding = Responsive.scaleWidth(context, AppSpacing.xl);
-    final int gridCount = Responsive.responsiveGridCount(context);
-
     return CustomScrollView(
       slivers: [
         // Header
-        SliverPadding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-          sliver: SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.only(top: topPadding),
-              child: Row(
-                children: [
-                  Text('Discover', style: AppTextStyles.h1.copyWith(fontSize: Responsive.scaleWidth(context, 28))),
-                  const Spacer(),
-                  IconButton(
-                    icon: Icon(Icons.notifications_none_rounded, size: Responsive.scaleWidth(context, 22)),
-                    onPressed: () => Navigator.pushNamed(context, Routes.notifications),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.tune_rounded, size: Responsive.scaleWidth(context, 22)),
-                    onPressed: () => _showFilters(context),
-                  ),
-                ],
-              ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.xl, left: AppSpacing.lg, right: AppSpacing.lg),
+            child: Row(
+              children: [
+                Text('Discover', style: AppTextStyles.h1),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.notifications_none_rounded),
+                  onPressed: () => Navigator.pushNamed(context, Routes.notifications),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.tune_rounded),
+                  onPressed: () => _showFilters(context),
+                ),
+              ],
             ),
           ),
         ),
 
         // Search bar (read-only -> navigates to Search screen)
-        SliverPadding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-          sliver: SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.only(top: Responsive.scaleWidth(context, AppSpacing.md)),
-              child: AppTextField(
-                hint: 'Search for clothes...',
-                prefix: const Icon(Icons.search),
-                // some AppTextField implementations accept readOnly/onTap
-                // if yours doesn't, replace with a GestureDetector wrapper.
-                readOnly: true,
-                onTap: () => Navigator.pushNamed(context, Routes.search),
-              ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.md, left: AppSpacing.lg, right: AppSpacing.lg),
+            child: AppTextField(
+              hint: 'Search for clothes...',
+              prefix: const Icon(Icons.search),
+              readOnly: true,
+              onTap: () => Navigator.pushNamed(context, Routes.search),
             ),
           ),
         ),
 
         // Category chips
-        SliverPadding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-          sliver: SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: Responsive.scaleWidth(context, AppSpacing.lg)),
-              child: SizedBox(
-                height: Responsive.scaleWidth(context, 40),
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _categories.length,
-                  separatorBuilder: (_, __) => SizedBox(width: Responsive.scaleWidth(context, AppSpacing.sm)),
-                  itemBuilder: (_, i) {
-                    final selected = _selected == i;
-                    return ChoiceChip(
-                      label: Text(_categories[i], style: selected ? AppTextStyles.body.copyWith(color: Colors.white, fontWeight: FontWeight.w600, fontSize: Responsive.scaleWidth(context, 14)) : AppTextStyles.body.copyWith(fontSize: Responsive.scaleWidth(context, 14))),
-                      selected: selected,
-                      backgroundColor: AppColors.accent,
-                      selectedColor: AppColors.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        side: BorderSide(
-                          color: selected ? AppColors.primary : AppColors.fieldBorder,
-                        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg, horizontal: AppSpacing.lg),
+            child: SizedBox(
+              height: 36,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _categories.length,
+                separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
+                itemBuilder: (_, i) {
+                  final selected = _selected == i;
+                  return ChoiceChip(
+                    label: Text(_categories[i]),
+                    selected: selected,
+                    backgroundColor: const Color(0xFFF6F6F6),
+                    selectedColor: Colors.black,
+                    labelStyle: selected
+                        ? AppTextStyles.body.copyWith(color: Colors.white, fontWeight: FontWeight.w600)
+                        : AppTextStyles.body,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      side: BorderSide(
+                        color: selected ? Colors.black : AppColors.fieldBorder,
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(context, 14), vertical: Responsive.scaleWidth(context, 8)),
-                      onSelected: (_) => setState(() => _selected = i),
-                    );
-                  },
-                ),
+                    ),
+                    onSelected: (_) => setState(() => _selected = i),
+                  );
+                },
               ),
             ),
           ),
@@ -105,7 +91,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
 
         // Products grid
         SliverPadding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
           sliver: SliverGrid(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
@@ -131,7 +117,8 @@ class _DiscoverTabState extends State<DiscoverTab> {
                         'discount': discount,
                         'rating': 4.6,
                         'reviewsCount': 128,
-                        'description': 'Premium cotton tee with breathable fabric and a regular fit.',
+                        'description':
+                            'Premium cotton tee with breathable fabric and a regular fit.',
                       },
                     );
                   },
@@ -139,17 +126,16 @@ class _DiscoverTabState extends State<DiscoverTab> {
               },
               childCount: 8,
             ),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: gridCount,
-              mainAxisSpacing: Responsive.scaleWidth(context, AppSpacing.lg),
-              crossAxisSpacing: Responsive.scaleWidth(context, AppSpacing.lg),
-              // childAspectRatio tuned to be adaptive: taller cards on wide screens
-              childAspectRatio: Responsive.isTablet(context) ? 0.85 : 0.72,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: AppSpacing.lg,
+              crossAxisSpacing: AppSpacing.lg,
+              childAspectRatio: 0.72,
             ),
           ),
         ),
 
-        SliverToBoxAdapter(child: SizedBox(height: Responsive.scaleWidth(context, AppSpacing.xxl))),
+        const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xxl)),
       ],
     );
   }
