@@ -3,7 +3,7 @@ import 'package:ecommerce_mobile/globals/theme.dart';
 import 'package:ecommerce_mobile/widgets/app_button.dart';
 import 'package:ecommerce_mobile/routes/routes.dart';
 
-// Cart wiring
+// Cart screens 
 import 'package:ecommerce_mobile/models/cart_item.dart';
 import 'package:ecommerce_mobile/services/cart_manager.dart';
 
