@@ -297,7 +297,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 Expanded(
                                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                     Text('Price', style: AppTextStyles.caption),
-                                    Text('\$${price.toInt()}', style: AppTextStyles.h2.copyWith(fontSize: 22)),
+                                    Text('\₹${price.toInt()}', style: AppTextStyles.h2.copyWith(fontSize: 22)),
                                   ]),
                                 ),
                                 const SizedBox(width: 12),
@@ -507,7 +507,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 const SizedBox(height: AppSpacing.lg),
                 Row(
                   children: [
-                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Price', style: AppTextStyles.caption), Text('\$${price.toInt()}', style: AppTextStyles.h2.copyWith(fontSize: 22))])),
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Price', style: AppTextStyles.caption), Text('\₹${price.toInt()}', style: AppTextStyles.h2.copyWith(fontSize: 22))])),
                     const SizedBox(width: 12),
                     // quantity + add button
                     Row(

@@ -198,7 +198,7 @@ class _CartTile extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text('Size ${item.size}', style: AppTextStyles.caption),
                 const SizedBox(height: 8),
-                Text('\$${item.price}', style: AppTextStyles.body),
+                Text('\₹${item.price}', style: AppTextStyles.body),
               ],
             ),
           ),
