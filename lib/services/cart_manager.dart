@@ -10,7 +10,6 @@ class CartManager extends ChangeNotifier {
   List<CartItem> get items => List.unmodifiable(_items);
 
   void addItem(CartItem item) {
-    // Try to find same item id+size and increment quantity
     final idx = _items.indexWhere((i) => i.id == item.id && i.size == item.size);
     if (idx >= 0) {
       _items[idx].quantity += item.quantity;
@@ -34,7 +33,7 @@ class CartManager extends ChangeNotifier {
     }
   }
 
-  // Simple summary getters
+  
   int get subtotal => _items.fold(0, (s, i) => s + (i.price * i.quantity));
   int get shippingFee => _items.isEmpty ? 0 : 80;
   double get vatAmount => 0.0; // placeholder
