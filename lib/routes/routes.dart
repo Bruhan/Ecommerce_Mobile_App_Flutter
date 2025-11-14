@@ -1,5 +1,3 @@
-/// Central place for all app route names.
-/// Keep these in sync with `RouteGenerator.generateRoute`.
 class Routes {
   // ── Auth ────────────────────────────────────────────────────────────────────
   static const splash = '/splash  ';
