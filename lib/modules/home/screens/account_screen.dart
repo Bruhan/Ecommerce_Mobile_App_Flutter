@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
 
-// screens we navigate to
 import 'package:ecommerce_mobile/modules/home/screens/my_details_screen.dart';
 import 'package:ecommerce_mobile/modules/home/screens/addresses_screen.dart';
 import 'package:ecommerce_mobile/modules/home/screens/saved_screen.dart';
@@ -101,7 +100,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
               const SizedBox(height: AppSpacing.xl),
 
-              // options container (use AppColors.bg for 'card' fallback)
+              
               Container(
                 decoration: BoxDecoration(
                   color: AppColors.bg,
@@ -179,7 +178,6 @@ class _AccountScreenState extends State<AccountScreen> {
 
               const SizedBox(height: AppSpacing.xl),
 
-              // Settings / logout area (use h2 as fallback for h3)
               Text('Settings', style: AppTextStyles.h2),
               const SizedBox(height: AppSpacing.md),
 
