@@ -4,8 +4,8 @@ import '../../../widgets/app_bottom_nav.dart';
 
 import 'discover_tab.dart';
 import 'search_screen.dart';
-import 'saved_screen.dart';
-import 'cart_screen.dart';
+import 'package:ecommerce_mobile/modules/home/screens/saved_screen.dart';
+import 'package:ecommerce_mobile/modules/cart/screens/cart_screen.dart';
 import 'account_screen.dart';
 
 class HomeShell extends StatefulWidget {
@@ -18,10 +18,11 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
 
-  final List<Widget> _pages = const [
+  // removed `const` here because not all screens may have const constructors
+  final List<Widget> _pages = [
     DiscoverTab(),
     SearchScreen(),
-    SavedScreen(),
+    const SavedScreen(), // use the correct SavedScreen
     CartScreen(),
     AccountScreen(),
   ];
@@ -30,6 +31,7 @@ class _HomeShellState extends State<HomeShell> {
   Widget build(BuildContext context) {
     final screen = _pages[_index];
 
+    // apply extra horizontal padding only for the DiscoverTab screen
     final shouldApplyPadding = screen is DiscoverTab;
 
     return Scaffold(
@@ -39,8 +41,7 @@ class _HomeShellState extends State<HomeShell> {
             constraints: const BoxConstraints(maxWidth: 420),
             child: shouldApplyPadding
                 ? Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                     child: screen,
                   )
                 : screen,

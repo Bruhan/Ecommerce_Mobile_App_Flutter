@@ -1,5 +1,7 @@
+/// Central place for all app route names.
+/// Keep these in sync with `RouteGenerator.generateRoute`.
 class Routes {
-  // Auth
+  // ── Auth ────────────────────────────────────────────────────────────────────
   static const splash = '/';
   static const login = '/login';
   static const register = '/register';
@@ -7,19 +9,15 @@ class Routes {
   static const otp = '/otp';
   static const resetPassword = '/reset-password';
 
-  // Home
+  // ── Home / Tabs ─────────────────────────────────────────────────────────────
   static const home = '/home';
-
-  static const notifications = '/notifications';
   static const search = '/search';
   static const saved = '/saved';
   static const cart = '/cart';
   static const account = '/account';
-}
-// import 'package:flutter/material.dart';
+  static const notifications = '/notifications';
 
-// class Routes {
-//   static const splash = '/';
-//   static const login = '/login';
-//   static const home = '/home';
-// }
+  // ── Products ────────────────────────────────────────────────────────────────
+  static const productDetails = '/product-details';
+  static const reviews = '/reviews';
+}
