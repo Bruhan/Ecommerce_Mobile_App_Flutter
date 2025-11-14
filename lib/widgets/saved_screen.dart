@@ -1,4 +1,3 @@
-// lib/modules/home/screens/saved_screen.dart
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
 
