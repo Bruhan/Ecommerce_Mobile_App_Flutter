@@ -1,4 +1,3 @@
-// lib/services/address_manager.dart
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -60,8 +59,6 @@ class AddressModel {
   }
 }
 
-/// Simple AddressManager using ValueNotifier for UI updates and in-memory storage.
-/// Replace persistence methods with your storage / API logic.
 class AddressManager {
   AddressManager._internal();
 
@@ -69,10 +66,8 @@ class AddressManager {
 
   final ValueNotifier<List<AddressModel>> addresses = ValueNotifier<List<AddressModel>>([]);
 
-  /// initialize - call once (e.g., from main.dart) to load persisted addresses
   Future<void> init() async {
-    // TODO: Load from persistent storage (SharedPreferences, Hive, DB, or network)
-    // For now populate sample data if empty:
+
     if (addresses.value.isEmpty) {
       addresses.value = [
         AddressModel(
