@@ -1,4 +1,3 @@
-// lib/modules/home/screens/discover_tab.dart
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
 import 'package:ecommerce_mobile/routes/routes.dart';
