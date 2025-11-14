@@ -1,3 +1,4 @@
+// lib/globals/theme.dart
 import 'package:flutter/material.dart';
 
 class AppColors {
@@ -11,9 +12,11 @@ class AppColors {
   static const success = Color(0xFF2ECC71);
   static const danger = Color(0xFFE53935);
 
-  static Color? fieldBackground;
+  // REQUIRED fields (must exist)
+  static const muted = Color(0xFF9A9A9A);
+  static const accent = Color(0xFFF6F6F6);
 
-  // static Color? get danger => null;
+  static Color fieldBackground = accent;
 }
 
 class AppSpacing {
@@ -73,7 +76,7 @@ ThemeData buildAppTheme() {
       hintStyle: AppTextStyles.caption,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       filled: true,
-      fillColor: Colors.white,
+      fillColor: AppColors.fieldBackground,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadii.lg),
         borderSide: const BorderSide(color: AppColors.fieldBorder),

@@ -5,7 +5,7 @@ import 'package:ecommerce_mobile/widgets/app_button.dart';
 import 'package:ecommerce_mobile/widgets/app_text_field.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({super.key});
+  const ForgotPasswordScreen({super.key}); 
 
   @override
   State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();

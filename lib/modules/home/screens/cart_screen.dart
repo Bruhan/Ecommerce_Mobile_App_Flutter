@@ -12,6 +12,7 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  // listen to CartManager via AnimatedBuilder on the singleton
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,16 +22,7 @@ class _CartScreenState extends State<CartScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {
-              // Use your notifications route if available
-              if (Routes.notifications.isNotEmpty) {
-                Navigator.pushNamed(context, Routes.notifications);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Notifications screen not available')),
-                );
-              }
-            },
+            onPressed: () => Navigator.pushNamed(context, Routes.notifications),
           )
         ],
       ),
@@ -71,12 +63,7 @@ class _CartScreenState extends State<CartScreen> {
                           CartManager.instance.updateQuantity(item.id, item.size, item.quantity + 1);
                         },
                         onDecrement: () {
-                          if (item.quantity > 1) {
-                            CartManager.instance.updateQuantity(item.id, item.size, item.quantity - 1);
-                          } else {
-                            // Optionally confirm deletion if quantity would go to 0 its upto prefernces 
-                            CartManager.instance.removeItem(item.id, size: item.size);
-                          }
+                          CartManager.instance.updateQuantity(item.id, item.size, item.quantity - 1);
                         },
                       );
                     },
@@ -110,15 +97,14 @@ class _CartScreenState extends State<CartScreen> {
 
                 const SizedBox(height: AppSpacing.md),
 
-                // here comes the checkout button
+                // checkout button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                    
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Checkout is not implemented yet')),
-                      );
+                      // navigate to checkout (implement screen separately)
+                      // For now just show a snackbar
+                      Navigator.pushNamed(context, Routes.checkout); // if exists
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 14),
@@ -134,7 +120,7 @@ class _CartScreenState extends State<CartScreen> {
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       elevation: 0,
-                      backgroundColor: AppColors.primary, 
+                      primary: AppColors.primary,
                     ),
                   ),
                 ),

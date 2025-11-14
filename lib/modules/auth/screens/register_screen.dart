@@ -30,51 +30,51 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _onRegister() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    await Future.delayed(const Duration(milliseconds: 600)); // TODO: API
+
+    await Future.delayed(const Duration(milliseconds: 800));
     setState(() => _loading = false);
 
-    // TODO: navigate on success
-    // if (!mounted) return;
-    // Navigator.pushReplacementNamed(context, Routes.home);
+    // ✅ Navigate to Login page after registration
+    Navigator.pushReplacementNamed(context, Routes.login);
   }
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final bottom = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(
-      appBar: AppBar(leading: const BackButton()),
       body: SafeArea(
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(
-              AppSpacing.xl,
-              AppSpacing.xl,
-              AppSpacing.xl,
-              AppSpacing.xl + bottomInset,
-            ),
-            child: AutofillGroup(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.xl,
+                AppSpacing.xl,
+                AppSpacing.xl,
+                AppSpacing.xl + bottom,
+              ),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Create an account', style: AppTextStyles.h1),
+                    Text('Create your account', style: AppTextStyles.h1),
                     SizedBox(height: AppSpacing.xs),
-                    Text("Let’s create your account.",
+                    Text("Let’s get started by creating your account.",
                         style: AppTextStyles.subtitle),
                     SizedBox(height: AppSpacing.xxl),
+
                     Text('Full Name', style: AppTextStyles.body),
                     SizedBox(height: AppSpacing.xs),
                     AppTextField(
                       controller: _name,
                       hint: 'Enter your full name',
-                      validator: (v) => (v == null || v.trim().isEmpty)
-                          ? 'Name is required'
-                          : null,
+                      validator: (v) =>
+                          (v == null || v.isEmpty) ? 'Name is required' : null,
                     ),
                     SizedBox(height: AppSpacing.lg),
+
                     Text('Email', style: AppTextStyles.body),
                     SizedBox(height: AppSpacing.xs),
                     AppTextField(
@@ -83,17 +83,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       keyboardType: TextInputType.emailAddress,
                       validator: (v) {
                         if (v == null || v.isEmpty) return 'Email is required';
-                        final ok =
-                            RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v.trim());
+                        final ok = RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v);
                         return ok ? null : 'Enter a valid email';
                       },
                     ),
                     SizedBox(height: AppSpacing.lg),
+
                     Text('Password', style: AppTextStyles.body),
                     SizedBox(height: AppSpacing.xs),
                     AppTextField(
                       controller: _password,
-                      hint: 'Enter your password',
+                      hint: 'Create a password',
                       obscure: _obscure,
                       suffix: IconButton(
                         icon: Icon(
@@ -103,68 +103,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         onPressed: () => setState(() => _obscure = !_obscure),
                       ),
-                      validator: (v) => (v == null || v.length < 6)
-                          ? 'Min 6 characters'
-                          : null,
+                      validator: (v) {
+                        if (v == null || v.isEmpty) {
+                          return 'Password is required';
+                        }
+                        if (v.length < 6) {
+                          return 'Password must be at least 6 characters';
+                        }
+                        return null;
+                      },
                     ),
-                    SizedBox(height: AppSpacing.xl),
-                    Text(
-                      'By signing up you agree to our Terms, Privacy Policy, and Cookie Use',
-                      style: AppTextStyles.caption,
-                    ),
-                    SizedBox(height: AppSpacing.lg),
+                    SizedBox(height: AppSpacing.xxl),
+
                     AppButton(
-                      label: 'Create an Account',
-                      onPressed: _onRegister,
-                      loading: _loading,
+                      label: _loading ? 'Creating account...' : 'Register',
+                      onPressed: _loading ? null : _onRegister,
                     ),
                     SizedBox(height: AppSpacing.xl),
-                    Row(
-                      children: [
-                        Expanded(child: Divider(color: AppColors.divider)),
-                        Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                          child: Text('Or', style: AppTextStyles.caption),
-                        ),
-                        Expanded(child: Divider(color: AppColors.divider)),
-                      ],
-                    ),
-                    SizedBox(height: AppSpacing.lg),
-                    OutlinedButton(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: AppColors.fieldBorder),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppRadii.lg),
-                        ),
-                        backgroundColor: AppColors.surface,
-                        minimumSize: const Size(double.infinity, 50),
-                      ),
-                      child: Text(
-                        'Sign Up with Google',
-                        style: AppTextStyles.body
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    SizedBox(height: AppSpacing.sm),
-                    OutlinedButton(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: AppColors.fieldBorder),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppRadii.lg),
-                        ),
-                        backgroundColor: AppColors.surface,
-                        minimumSize: const Size(double.infinity, 50),
-                      ),
-                      child: Text(
-                        'Sign Up with Facebook',
-                        style: AppTextStyles.body
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    SizedBox(height: AppSpacing.xl),
+
                     Center(
                       child: Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
@@ -181,7 +137,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               Routes.login,
                             ),
                             child: Text(
-                              'Log In',
+                              'Login',
                               style: AppTextStyles.body.copyWith(
                                 decoration: TextDecoration.underline,
                                 fontWeight: FontWeight.w600,

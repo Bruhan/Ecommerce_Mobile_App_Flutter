@@ -2,7 +2,7 @@
 /// Keep these in sync with `RouteGenerator.generateRoute`.
 class Routes {
   // ── Auth ────────────────────────────────────────────────────────────────────
-  static const splash = '/';
+  static const splash = '/splash  ';
   static const login = '/login';
   static const register = '/register';
   static const forgotPassword = '/forgot-password';

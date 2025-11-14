@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import '../globals/theme.dart';
+import 'package:ecommerce_mobile/globals/theme.dart';
+import 'package:ecommerce_mobile/globals/responsive.dart';
 
 class ProductCard extends StatelessWidget {
   final String imageUrl;
   final String title;
-  final int price;
-  final double? discount; // 0.52 => 52%
-  final VoidCallback? onTap;
+  final double price;
+  final double? discount;
+  final VoidCallback onTap;
 
   const ProductCard({
     super.key,
@@ -14,65 +15,50 @@ class ProductCard extends StatelessWidget {
     required this.title,
     required this.price,
     this.discount,
-    this.onTap,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    final double cardRadius = Responsive.scaleWidth(context, AppRadii.md);
+    final double imageHeight = Responsive.isTablet(context)
+        ? Responsive.scaleWidth(context, 240)
+        : Responsive.scaleWidth(context, 180);
+
+    final double titleFont = Responsive.scaleWidth(context, 14);
+    final double priceFont = Responsive.scaleWidth(context, 13);
+
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadii.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AspectRatio(
-            aspectRatio: 1,
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppRadii.lg),
-                    child: Image.network(imageUrl, fit: BoxFit.cover),
-                  ),
-                ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x11000000),
-                          blurRadius: 8,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(6),
-                      child: Icon(Icons.favorite_border_rounded, size: 18),
-                    ),
-                  ),
-                ),
-              ],
+          ClipRRect(
+            borderRadius: BorderRadius.circular(cardRadius),
+            child: Image.network(
+              imageUrl,
+              height: imageHeight,
+              width: double.infinity,
+              fit: BoxFit.cover,
             ),
           ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(title, style: AppTextStyles.body),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              Text('\$ $price', style: AppTextStyles.body),
-              if (discount != null) ...[
-                const SizedBox(width: 8),
-                Text(
-                  '-${(discount! * 100).toStringAsFixed(0)}%',
-                  style: AppTextStyles.caption.copyWith(color: AppColors.danger),
-                ),
-              ],
-            ],
+          SizedBox(height: Responsive.scaleWidth(context, AppSpacing.sm)),
+          Text(
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.body.copyWith(
+              fontSize: titleFont,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(height: Responsive.scaleWidth(context, 4)),
+          Text(
+            '₹${price.toInt()}',
+            style: AppTextStyles.caption.copyWith(
+              fontSize: priceFont,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),

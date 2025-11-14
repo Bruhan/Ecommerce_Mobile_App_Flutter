@@ -1,9 +1,8 @@
-// lib/models/cart_item.dart
 class CartItem {
   final String id;
   final String title;
   final String imageUrl;
-  final int price; // price per unit (integer cents/units as you currently use)
+  final int price; 
   final String size;
   int quantity;
 
@@ -18,7 +17,6 @@ class CartItem {
 
   int get totalPrice => price * quantity;
 
-  // simple serialization helpers (optional; useful if you want to persist cart)
   Map<String, dynamic> toMap() {
     return {
       'id': id,
