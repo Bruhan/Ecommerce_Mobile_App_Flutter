@@ -36,7 +36,7 @@ class _NewAddressScreenState extends State<NewAddressScreen> {
             // map placeholder (replace with real map widget later)
             Container(
               height: 220,
-              color: AppColors.card,
+              color: AppColors.surface,
               alignment: Alignment.center,
               child: const Icon(Icons.map_outlined, size: 48),
             ),

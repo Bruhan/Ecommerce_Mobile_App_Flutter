@@ -1,8 +1,17 @@
+import 'dart:convert';
+
+import 'package:ecommerce_mobile/globals/globals.dart';
+import 'package:ecommerce_mobile/modules/auth/constants/auth-api.constant.dart';
+import 'package:ecommerce_mobile/modules/auth/types/login_with_password_response.dart';
+import 'package:ecommerce_mobile/modules/general/types/api.types.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
 import 'package:ecommerce_mobile/routes/routes.dart';
 import 'package:ecommerce_mobile/widgets/app_button.dart';
 import 'package:ecommerce_mobile/widgets/app_text_field.dart';
+
+import '../../../network/api_service.dart';
+import '../lib/jwt.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,14 +22,14 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _email = TextEditingController();
+  final _username = TextEditingController();
   final _password = TextEditingController();
   bool _obscure = true;
   bool _loading = false;
 
   @override
   void dispose() {
-    _email.dispose();
+    _username.dispose();
     _password.dispose();
     super.dispose();
   }
@@ -29,17 +38,50 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
 
-    // Simulate backend delay
-    await Future.delayed(const Duration(milliseconds: 700));
+    final ApiService _apiService = ApiService();
+    try {
+      var reqBody = {
+        'authenticationId': _username.text,
+        'password': _password.text,
+        'loginType': "user"
+      };
 
-    setState(() => _loading = false);
+      final res = await _apiService.post(AuthApiConstant.loginWithPassword, json.encode(reqBody));
+      print(res);
 
-    // ✅ Navigate to Home and clear back stack
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      Routes.home,
-      (route) => false,
-    );
+      WebResponse<LoginWithPasswordResponse> response = WebResponse.fromJson(res, (data) {
+        return LoginWithPasswordResponse.fromJson(data);
+      });
+
+      if(response.statusCode == 401) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(response.message))
+        );
+      }
+
+      if(response.statusCode == 200) {
+        LoginWithPasswordResponse loginData = response.results;
+        Map<String, dynamic>? decodedToken = JWT.processJwt(loginData.token);
+        storage.write(key: 'jwt', value: loginData.token);
+
+        setState(() => _loading = false);
+
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.home,
+          (route) => false,
+        );
+      }
+
+    } catch (err) {
+      print(err.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(err.toString())
+          )
+      );
+    }
+
   }
 
   @override
@@ -70,18 +112,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       Text("It’s great to see you again.",
                           style: AppTextStyles.subtitle),
                       SizedBox(height: AppSpacing.xxl),
-                      Text('Email', style: AppTextStyles.body),
+                      Text('Email or Mobile Number', style: AppTextStyles.body),
                       SizedBox(height: AppSpacing.xs),
                       AppTextField(
-                        controller: _email,
-                        hint: 'Enter your email address',
-                        keyboardType: TextInputType.emailAddress,
+                        controller: _username,
+                        hint: 'Enter your email address or mobile number',
+                        keyboardType: TextInputType.text,
                         validator: (v) {
                           if (v == null || v.isEmpty)
-                            return 'Email is required';
-                          final ok =
-                              RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v.trim());
-                          return ok ? null : 'Enter a valid email';
+                            return 'Email or Mobile No is required';
+                          final ok = RegExp(
+                              r'^((\+91)?[6-9]\d{9}|[^@]+@[^@]+\.[^@]+)$'
+                          ).hasMatch(v.trim());
+                          return ok ? null : 'Enter a valid email or mobile number';
                         },
                       ),
                       SizedBox(height: AppSpacing.lg),

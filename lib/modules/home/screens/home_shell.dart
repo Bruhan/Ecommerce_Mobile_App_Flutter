@@ -38,10 +38,10 @@ class _HomeShellState extends State<HomeShell> {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
+            constraints: const BoxConstraints(maxWidth: 500),
             child: shouldApplyPadding
                 ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                     child: screen,
                   )
                 : screen,
