@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'globals/globals.dart';
 import 'globals/theme.dart';
+import 'modules/auth/lib/jwt.dart';
 import 'routes/route_generator.dart';
 import 'routes/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -69,8 +70,18 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
 
   Future<String> get jwtOrEmpty async {
-    var jwt = await storage.read(key: "jwt") ?? "";
-    return jwt;
+    try {
+      final jwt = await storage.read(key: "jwt").timeout(
+        const Duration(seconds: 3),
+        onTimeout: () => "",
+      );
+      debugPrint("jwt: $jwt");
+      return jwt ?? "";
+    } catch (e) {
+      debugPrint("⚠️ SecureStorage read error: $e");
+      await storage.deleteAll();
+      return "";
+    }
   }
 
   @override
@@ -89,46 +100,80 @@ class _MyAppState extends State<MyApp> {
           child: child,
         );
       },
-        home: FutureBuilder(future: jwtOrEmpty, builder: (context, snapshot) {
+        home: FutureBuilder(
+            future: jwtOrEmpty,
+            builder: (context, snapshot) {
 
-          if(!snapshot.hasData) return const Scaffold(body: Center(child: CircularProgressIndicator(),),);
-
-          // print('Snapshot hasData: ${snapshot.hasData}');
-          // print('Snapshot data: ${snapshot.data}');
-
-          if(snapshot.data != null && snapshot.data != "") {
-            var decodedJson = json.decode(snapshot.data!);
-
-            if(decodedJson['accessToken'] != null) {
-
-              var decoded = processJwt(decodedJson['accessToken']);
-              print(decoded);
-
-              if(decoded != null)  {
-
-
-                var loginType = storage.read(key: "loginType");
-                loginType.then((val) {
-                    Globals.plant = decoded['plt'];
-
-                    var expiration = DateTime.fromMillisecondsSinceEpoch(decoded["exp"] * 1000);
-
-
-                    if(expiration.isAfter(DateTime.now())) {
-
-                      Future.microtask(() => Navigator.pushReplacementNamed(context, Routes.home));
-                      return Container();
-                    }
-                });
-
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
               }
-            }
-          }
+
+              if (snapshot.hasError) {
+                debugPrint("Error loading JWT: ${snapshot.error}");
+                return _buildErrorScreen(context);
+              }
+
+              final token = snapshot.data ?? "";
+
+              if (token.isEmpty) {
+                return _navigateTo(context, Routes.login);
+              }
+
+              final decodedJWT = JWT.processJwt(token);
+
+              if (decodedJWT == null) {
+                return _navigateTo(context, Routes.login);
+              }
+
+              final expiration = DateTime.fromMillisecondsSinceEpoch(
+                  decodedJWT["exp"] * 1000);
+
+              if (expiration.isAfter(DateTime.now())) {
+                  return _navigateTo(context, Routes.home);
+
+              } else {
+                return _navigateTo(context, Routes.login);
+              }
 
           Future.microtask(() => Navigator.pushReplacementNamed(context, Routes.login));
           return Container();
 
         })
+    );
+  }
+
+  Widget _navigateTo(BuildContext context, String routeName) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, routeName);
+      }
+    });
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget _buildErrorScreen(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error, color: Colors.red, size: 64),
+            const SizedBox(height: 16),
+            const Text("Something went wrong"),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, Routes.login);
+              },
+              child: const Text("Retry"),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

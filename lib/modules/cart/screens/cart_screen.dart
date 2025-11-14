@@ -98,13 +98,13 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                   child: Column(
                     children: [
-                      _summaryRow('Sub-total', '\$${subtotal.toString()}'),
+                      _summaryRow('Sub-total', '\₹${subtotal.toString()}'),
                       const SizedBox(height: AppSpacing.sm),
-                      _summaryRow('VAT (%)', '\$${vatAmount.toStringAsFixed(2)}'),
+                      _summaryRow('VAT (%)', '\₹${vatAmount.toStringAsFixed(2)}'),
                       const SizedBox(height: AppSpacing.sm),
-                      _summaryRow('Shipping fee', '\$${shipping.toString()}'),
+                      _summaryRow('Shipping fee', '\₹${shipping.toString()}'),
                       const Divider(height: AppSpacing.lg * 1.2),
-                      _summaryRow('Total', '\$${total.toStringAsFixed(0)}', isTotal: true),
+                      _summaryRow('Total', '\₹${total.toStringAsFixed(0)}', isTotal: true),
                     ],
                   ),
                 ),
@@ -187,7 +187,7 @@ class _CartTile extends StatelessWidget {
           // image
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(item.imageUrl, width: 72, height: 72, fit: BoxFit.cover),
+            child: Image.network(item.imageUrl, width: 72, height: 72, fit: BoxFit.fill),
           ),
           const SizedBox(width: AppSpacing.md),
 

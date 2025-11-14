@@ -13,11 +13,7 @@ class ApiService {
 
   Future<String?> getAccessToken() async {
     final tokens = await storage.read(key: "jwt");
-
-    if (tokens != null) {
-      return json.decode(tokens)["accessToken"];
-    }
-    return null;
+    return tokens;
   }
 
   String getApiLink()  {

@@ -64,7 +64,7 @@ class ProductCard extends StatelessWidget {
           const SizedBox(height: 4),
           Row(
             children: [
-              Text('\$ $price', style: AppTextStyles.body),
+              Text('\₹ $price', style: AppTextStyles.body),
               if (discount != null) ...[
                 const SizedBox(width: 8),
                 Text(
