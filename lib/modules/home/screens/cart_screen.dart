@@ -12,7 +12,7 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  // listen to CartManager via AnimatedBuilder on the singleton
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,8 +102,7 @@ class _CartScreenState extends State<CartScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // navigate to checkout (implement screen separately)
-                      // For now just show a snackbar
+                      
                       Navigator.pushNamed(context, Routes.checkout); // if exists
                     },
                     child: Padding(
