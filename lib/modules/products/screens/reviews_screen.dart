@@ -13,8 +13,7 @@ class ReviewsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Hardcoded for demo; use your real review data in production
-    final breakdown = [24, 15, 4, 2, 0]; // Star counts, highest to lowest
+    final breakdown = [24, 15, 4, 2, 0]; 
     final reviewList = [
       {
         'name': "Wade Warren",

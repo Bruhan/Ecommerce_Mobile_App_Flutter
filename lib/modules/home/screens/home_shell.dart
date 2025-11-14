@@ -18,11 +18,11 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
 
-  // removed `const` here because not all screens may have const constructors
+  
   final List<Widget> _pages = [
     DiscoverTab(),
     SearchScreen(),
-    const SavedScreen(), // use the correct SavedScreen
+    const SavedScreen(), 
     CartScreen(),
     AccountScreen(),
   ];
@@ -31,7 +31,7 @@ class _HomeShellState extends State<HomeShell> {
   Widget build(BuildContext context) {
     final screen = _pages[_index];
 
-    // apply extra horizontal padding only for the DiscoverTab screen
+  
     final shouldApplyPadding = screen is DiscoverTab;
 
     return Scaffold(

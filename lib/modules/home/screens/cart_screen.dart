@@ -12,6 +12,7 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,16 +22,7 @@ class _CartScreenState extends State<CartScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {
-              // Use your notifications route if available
-              if (Routes.notifications.isNotEmpty) {
-                Navigator.pushNamed(context, Routes.notifications);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Notifications screen not available')),
-                );
-              }
-            },
+            onPressed: () => Navigator.pushNamed(context, Routes.notifications),
           )
         ],
       ),
@@ -71,12 +63,7 @@ class _CartScreenState extends State<CartScreen> {
                           CartManager.instance.updateQuantity(item.id, item.size, item.quantity + 1);
                         },
                         onDecrement: () {
-                          if (item.quantity > 1) {
-                            CartManager.instance.updateQuantity(item.id, item.size, item.quantity - 1);
-                          } else {
-                            // Optionally confirm deletion if quantity would go to 0 its upto prefernces 
-                            CartManager.instance.removeItem(item.id, size: item.size);
-                          }
+                          CartManager.instance.updateQuantity(item.id, item.size, item.quantity - 1);
                         },
                       );
                     },
@@ -97,28 +84,26 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                   child: Column(
                     children: [
-                      _summaryRow('Sub-total', '\₹${subtotal.toString()}'),
+                      _summaryRow('Sub-total', '\$${subtotal.toString()}'),
                       const SizedBox(height: AppSpacing.sm),
-                      _summaryRow('VAT (%)', '\₹${vatAmount.toStringAsFixed(2)}'),
+                      _summaryRow('VAT (%)', '\$${vatAmount.toStringAsFixed(2)}'),
                       const SizedBox(height: AppSpacing.sm),
-                      _summaryRow('Shipping fee', '\₹${shipping.toString()}'),
+                      _summaryRow('Shipping fee', '\$${shipping.toString()}'),
                       const Divider(height: AppSpacing.lg * 1.2),
-                      _summaryRow('Total', '\₹${total.toStringAsFixed(0)}', isTotal: true),
+                      _summaryRow('Total', '\$${total.toStringAsFixed(0)}', isTotal: true),
                     ],
                   ),
                 ),
 
                 const SizedBox(height: AppSpacing.md),
 
-                // here comes the checkout button
+                // checkout button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                    
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Checkout is not implemented yet')),
-                      );
+                      
+                      Navigator.pushNamed(context, Routes.checkout); // if exists
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 14),
@@ -132,9 +117,8 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), backgroundColor: AppColors.primary,
                       elevation: 0,
-                      backgroundColor: AppColors.primary, 
                     ),
                   ),
                 ),
@@ -185,7 +169,7 @@ class _CartTile extends StatelessWidget {
           // image
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(item.imageUrl, width: 72, height: 72, fit: BoxFit.fill),
+            child: Image.network(item.imageUrl, width: 72, height: 72, fit: BoxFit.cover),
           ),
           const SizedBox(width: AppSpacing.md),
 

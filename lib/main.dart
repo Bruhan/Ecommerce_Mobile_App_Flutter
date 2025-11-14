@@ -90,10 +90,8 @@ class _MyAppState extends State<MyApp> {
       title: 'Alphabit Ecommerce App',
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
-      // Start with splash screen
       initialRoute: Routes.splash,
       onGenerateRoute: (settings) => RouteGenerator.generateRoute(settings),
-      // Optional: smooth fade transition when switching routes
       builder: (context, child) {
         return AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),

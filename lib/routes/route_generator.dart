@@ -1,8 +1,5 @@
-// lib/routes/route_generator.dart
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/routes/routes.dart';
-
-// screens (clean imports)
 import 'package:ecommerce_mobile/modules/auth/screens/splash_screen.dart';
 import 'package:ecommerce_mobile/modules/auth/screens/login_screen.dart';
 import 'package:ecommerce_mobile/modules/auth/screens/register_screen.dart';
@@ -16,7 +13,6 @@ import 'package:ecommerce_mobile/modules/home/screens/saved_screen.dart';
 import 'package:ecommerce_mobile/modules/products/screens/product_details_screen.dart';
 import 'package:ecommerce_mobile/modules/products/screens/reviews_screen.dart';
 
-/// Centralized route generator
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
@@ -68,7 +64,6 @@ class RouteGenerator {
       case Routes.reviews:
         return MaterialPageRoute(builder: (_) => const ReviewsScreen());
 
-      /// Default / Unknown route
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
