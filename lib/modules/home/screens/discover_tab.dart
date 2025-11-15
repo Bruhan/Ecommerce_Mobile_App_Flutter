@@ -1,5 +1,7 @@
 
 // lib/modules/home/screens/discover_tab.dart
+import 'dart:ffi';
+
 import 'package:ecommerce_mobile/modules/home/constants/product-api.constant.dart';
 import 'package:ecommerce_mobile/modules/home/types/book_product_response.dart';
 import 'package:ecommerce_mobile/network/api_service.dart';
@@ -23,7 +25,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
   final _categories = const ['All', 'Tshirts', 'Jeans', 'Shoes'];
   int _selected = 1;
 
-  List<Products>? productsData;
+  List<dynamic>? productsData;
   int totalProducts = 0;
   bool productsDataLoading = false;
 
@@ -42,17 +44,24 @@ class _DiscoverTabState extends State<DiscoverTab> {
           .bookProductsWithFilter
           .replaceFirst(":mode", "CRITERIA")
           .replaceFirst(":page", "1")
-          .replaceFirst(":productsCount", "50"));
+          .replaceFirst(":productsCount", "10"));
       WebResponse<BookProductResponse> response = WebResponse.fromJson(
         res,
         (data) {
           return BookProductResponse.fromJson(data);
         },
       );
-      print(response);
 
       if (response.statusCode == 200) {
-        productsData = response.results.products;
+        productsData = response.results.products?.map((item) {
+          return {
+            'imageUrl': item.imagePath ?? "",
+            'title': item.product?.itemDesc ?? "No Name",
+            'price': item.product?.ecomUnitPrice ?? 0,
+            'mrp': item.product?.mrp ?? item.product?.ecomUnitPrice ?? 0,
+            'description': item.product?.ecomDescription ?? "",
+          };
+        }).toList();
         totalProducts = response.results.totalProducts!;
 
         setState(() {
@@ -159,17 +168,14 @@ class _DiscoverTabState extends State<DiscoverTab> {
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final item = productsData![index];
-                      print("Item");
                       print(item);
-                      final product = item.product;
-
-                      final imageUrl = item.imagePath ?? "";
-                      final title = product?.itemDesc ?? "No Name";
-                      final price = product?.ecomUnitPrice ?? 0;
-                      final mrp = product?.mrp ?? price;
-
+                      final imageUrl = item['imageUrl'] ?? "";
+                      final title = item['title'] ?? "No Name";
+                      final price = item['price'] ?? 0;
+                      final mrp = item['mrp'] ?? price;
+                      final description = item['description'] ?? "";
                       // Calculate discount percentage if applicable
-                      final discount = mrp > price ? (1 - price / mrp) : null;
+                      final discount = mrp > price ? (1 - price / mrp).toDouble() : null;
 
                       return ProductCard(
                         imageUrl: imageUrl,
@@ -187,7 +193,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                               'discount': discount,
                               'rating': 4.6,
                               'reviewsCount': 128,
-                              'description': product?.ecomDescription ?? "",
+                              'description': description ?? "",
                             },
                           );
                         },
