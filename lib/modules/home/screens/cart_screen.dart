@@ -33,7 +33,7 @@ class _CartScreenState extends State<CartScreen> {
           final subtotal = CartManager.instance.subtotal;
           final shipping = CartManager.instance.shippingFee;
           final vatAmount = CartManager.instance.vatAmount;
-          final total = CartManager.instance.total;
+          final total = CartManager.instance.totalPrice;
 
           if (items.isEmpty) {
             return Center(

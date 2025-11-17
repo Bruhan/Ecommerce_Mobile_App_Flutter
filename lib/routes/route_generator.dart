@@ -1,3 +1,4 @@
+import 'package:ecommerce_mobile/modules/checkout/screens/checkout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/routes/routes.dart';
 import 'package:ecommerce_mobile/modules/auth/screens/splash_screen.dart';
@@ -45,6 +46,8 @@ class RouteGenerator {
 
       case Routes.cart:
         return MaterialPageRoute(builder: (_) => const CartScreen());
+      case Routes.checkout:
+        return MaterialPageRoute(builder: (_) => const CheckoutScreen());
 
       case Routes.saved:
         return MaterialPageRoute(builder: (_) => const SavedScreen());

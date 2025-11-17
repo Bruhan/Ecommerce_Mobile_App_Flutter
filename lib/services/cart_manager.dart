@@ -37,5 +37,6 @@ class CartManager extends ChangeNotifier {
   int get subtotal => _items.fold(0, (s, i) => s + (i.price * i.quantity));
   int get shippingFee => _items.isEmpty ? 0 : 80;
   double get vatAmount => 0.0; // placeholder
-  double get total => subtotal + shippingFee + vatAmount;
+  double get totalPrice => subtotal + shippingFee + vatAmount;
+  int get totalQuantity => _items.fold(0, (s, i) => s + i.quantity);
 }

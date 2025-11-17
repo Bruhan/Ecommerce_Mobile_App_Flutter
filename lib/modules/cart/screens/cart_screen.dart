@@ -41,7 +41,7 @@ class _CartScreenState extends State<CartScreen> {
           final subtotal = CartManager.instance.subtotal;
           final shipping = CartManager.instance.shippingFee;
           final vatAmount = CartManager.instance.vatAmount;
-          final total = CartManager.instance.total;
+          final total = CartManager.instance.totalPrice;
 
           if (items.isEmpty) {
             return Center(
@@ -116,9 +116,7 @@ class _CartScreenState extends State<CartScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                     
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Checkout is not implemented yet')),
-                      );
+                      Navigator.pushNamed(context, Routes.checkout);
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 14),

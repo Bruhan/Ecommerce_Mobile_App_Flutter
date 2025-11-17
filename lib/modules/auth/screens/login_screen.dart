@@ -47,7 +47,6 @@ class _LoginScreenState extends State<LoginScreen> {
       };
 
       final res = await _apiService.post(AuthApiConstant.loginWithPassword, json.encode(reqBody));
-      print(res);
 
       WebResponse<LoginWithPasswordResponse> response = WebResponse.fromJson(res, (data) {
         return LoginWithPasswordResponse.fromJson(data);
@@ -75,6 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     } catch (err) {
       print(err.toString());
+      setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(err.toString())
