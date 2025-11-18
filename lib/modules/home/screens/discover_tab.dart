@@ -1,3 +1,7 @@
+
+// lib/modules/home/screens/discover_tab.dart
+import 'dart:ffi';
+
 import 'package:ecommerce_mobile/modules/home/constants/product-api.constant.dart';
 import 'package:ecommerce_mobile/modules/home/types/book_product_response.dart';
 import 'package:ecommerce_mobile/network/api_service.dart';
@@ -35,7 +39,9 @@ class _DiscoverTabState extends State<DiscoverTab> {
 
   Future<void> fetchProductsData() async {
     try {
-      productsDataLoading = true;
+      setState(() {
+        productsDataLoading = true;
+      });
       final res = await _apiService.get(ProductApiConstant
           .bookProductsWithFilter
           .replaceFirst(":mode", "CRITERIA")
@@ -51,6 +57,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
       if (response.statusCode == 200) {
         productsData = response.results.products?.map((item) {
           return {
+            'item': item.product?.item ?? "",
             'imageUrl': item.imagePath ?? "",
             'title': item.product?.itemDesc ?? "No Name",
             'price': item.product?.ecomUnitPrice ?? 0,
@@ -164,7 +171,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final item = productsData![index];
-                      print(item);
+                      final id = item['item'] ?? "";
                       final imageUrl = item['imageUrl'] ?? "";
                       final title = item['title'] ?? "No Name";
                       final price = item['price'] ?? 0;
@@ -183,6 +190,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                             context,
                             Routes.productDetails,
                             arguments: {
+                              'id': id,
                               'title': title,
                               'imageUrls': [imageUrl],
                               'price': price,
@@ -201,7 +209,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                     crossAxisCount: 2,
                     mainAxisSpacing: AppSpacing.lg,
                     crossAxisSpacing: AppSpacing.lg,
-                    childAspectRatio: 0.72,
+                    childAspectRatio: 0.70,
                   ),
                 ),
         ),

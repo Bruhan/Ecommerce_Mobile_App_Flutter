@@ -1,5 +1,6 @@
 // lib/globals/theme.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
   static const primary = Colors.black;
@@ -35,26 +36,30 @@ class AppRadii {
 }
 
 class AppTextStyles {
-  static const h1 = TextStyle(
+  static final h1 = GoogleFonts.inter(
     fontSize: 28,
     fontWeight: FontWeight.w700,
     height: 1.2,
     color: AppColors.textPrimary,
   );
-  static const h2 = TextStyle(
+
+  static final h2 = GoogleFonts.inter(
     fontSize: 20,
     fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
   );
-  static const body = TextStyle(
+
+  static final body = GoogleFonts.inter(
     fontSize: 14,
     color: AppColors.textPrimary,
   );
-  static const caption = TextStyle(
+
+  static final caption = GoogleFonts.inter(
     fontSize: 12,
     color: AppColors.textSecondary,
   );
-  static const subtitle = TextStyle(
+
+  static final subtitle = GoogleFonts.inter(
     fontSize: 14,
     color: AppColors.textSecondary,
     height: 1.4,

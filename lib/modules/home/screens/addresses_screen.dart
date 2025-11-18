@@ -1,4 +1,3 @@
-// lib/modules/home/screens/addresses_screen.dart
 import 'dart:async';
 
 import 'package:flutter/material.dart';
