@@ -1,9 +1,16 @@
 import 'dart:convert';
 
-import 'package:ecommerce_mobile/modules/checkout/constants/checkout-api.constant.dart';
+import 'package:ecommerce_mobile/modules/checkout/constants/checkout-api.routes.dart';
 import 'package:ecommerce_mobile/modules/checkout/types/create_anonymous_sales_order_response.dart';
+import 'package:ecommerce_mobile/modules/checkout/types/create_sales_order_request.dart';
+import 'package:ecommerce_mobile/modules/checkout/types/create_sales_order_response.dart';
+import 'package:ecommerce_mobile/modules/checkout/types/customer.dart';
+import 'package:ecommerce_mobile/modules/checkout/types/customer_address.dart';
+import 'package:ecommerce_mobile/modules/checkout/types/customer_billing_address.dart';
 import 'package:ecommerce_mobile/modules/checkout/types/pre_process_anonymous_order_request.dart';
 import 'package:ecommerce_mobile/modules/checkout/types/pre_process_anonymous_order_response.dart';
+import 'package:ecommerce_mobile/modules/checkout/types/pre_process_order_request.dart';
+import 'package:ecommerce_mobile/modules/checkout/types/pre_process_order_response.dart';
 import 'package:ecommerce_mobile/routes/routes.dart';
 import 'package:flutter/material.dart';
 import '../../../globals/theme.dart';
@@ -23,6 +30,132 @@ class CheckoutScreen extends StatefulWidget {
 class _CheckoutScreenState extends State<CheckoutScreen> {
   String _selectedPayment = "COD"; // default payment method
   final ApiService _apiService = ApiService();
+
+  List<CustomerAddress>? customerAddressesData;
+  bool customerAddressesDataLoading = false;
+
+  CustomerBillingAddress? customerBillingAddressData;
+  bool customerBillingAddressDataLoading = false;
+
+  Customer? customerData;
+  bool customerDataLoading = false;
+
+  Future<void> fetchCustomer() async {
+    setState(() {
+      customerDataLoading = true;
+    });
+    try {
+      final res = await _apiService.get(
+        CheckoutApiRoutes.getCustomer,
+      );
+      WebResponse<Customer> response = WebResponse.fromJson(
+        res,
+            (data) => Customer.fromJson(data),
+      );
+
+      print(response);
+      if (response.statusCode == 200) {
+        setState(() {
+          customerData = response.results;
+          customerDataLoading = false;
+        });
+      } else {
+        if (mounted) {
+          setState(() {
+            customerDataLoading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(response.message ?? "Unknown error")),
+          );
+        }
+      }
+
+    } catch(e) {
+      setState(() {
+        customerDataLoading = false;
+      });
+      rethrow;
+    }
+  }
+
+  Future<void> fetchCustomerShippingAddress() async {
+    try {
+      setState(() {
+        customerAddressesDataLoading = true;
+      });
+      final res = await _apiService.get(CheckoutApiRoutes.getAllCustomerAddressV2);
+      WebResponse<List<CustomerAddress>> response = WebResponse.fromJson(
+          res,
+          (data) {
+            return (data as List)
+                .map((e) => CustomerAddress.fromJson(e as Map<String, dynamic>))
+                .toList();
+          }
+      );
+
+      if(response.statusCode == 200) {
+        customerAddressesData = response.results;
+
+        setState(() {
+          customerAddressesDataLoading = false;
+        });
+      }
+
+    } catch(ex) {
+      setState(() {
+        customerAddressesDataLoading = false;
+      });
+      rethrow;
+    }
+  }
+
+  Future<void> fetchCustomerBillingAddress() async {
+    setState(() {
+      customerBillingAddressDataLoading = true;
+    });
+    try {
+      final res = await _apiService.get(
+        CheckoutApiRoutes.getCustomerBillingAddress,
+      );
+      WebResponse<CustomerBillingAddress> response = WebResponse.fromJson(
+        res,
+            (data) => CustomerBillingAddress.fromJson(data),
+      );
+
+      print(response);
+      if (response.statusCode == 200) {
+        setState(() {
+          customerBillingAddressData = response.results;
+          customerBillingAddressDataLoading = false;
+        });
+      } else {
+        if (mounted) {
+          setState(() {
+            customerBillingAddressDataLoading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(response.message ?? "Unknown error")),
+          );
+        }
+      }
+
+    } catch(e) {
+      setState(() {
+        customerAddressesDataLoading = false;
+      });
+      rethrow;
+    }
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCustomer();
+    fetchCustomerShippingAddress();
+    fetchCustomerBillingAddress();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,6 +210,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
 
                 const SizedBox(height: AppSpacing.xl),
+                Text("Address", style: AppTextStyles.h2),
+                const SizedBox(height: AppSpacing.md,),
+                customerBillingAddressDataLoading ? const CircularProgressIndicator() :
+                _billingAddressCard(customerBillingAddressData!),
+
+                const SizedBox(height: AppSpacing.xl,),
 
                 /// ======= PAYMENT METHOD SELECTION =======
                 Text("Payment Method", style: AppTextStyles.h2),
@@ -136,6 +275,26 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
+  /// ===================== BILLING ADDRESS CARD ========================
+  Widget _billingAddressCard(CustomerBillingAddress address) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Billing Address",
+              style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600)),
+          Text(address.customerName ?? "No Name",
+              style: AppTextStyles.body),
+          Text("${address.mobileNumber}", style: AppTextStyles.caption,),
+          Text("${address.addr1 ?? ""} ${address.addr2 ?? ""} ${address.addr3 ?? ""} ${address.addr4 ?? ""}", style: AppTextStyles.caption),
+          Text("${address.state ?? ""} ${address.country ?? ""}", style: AppTextStyles.caption),
+        ],
+      ),
+    );
+  }
+
+
   /// =================== PAYMENT OPTION WIDGET ========================
   Widget _paymentOption(String key, String title, IconData icon) {
     bool selected = _selectedPayment == key;
@@ -174,9 +333,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Future<void> _onCheckoutPressed(BuildContext context)async {
     if(_selectedPayment == "COD") {
+
+      if(customerData == null) {
+        const ScaffoldMessenger(
+          child: SnackBar(content: Text("There is no customer data found")),
+        );
+        return;
+      }
+
       final totalPrice = CartManager.instance.totalPrice;
       final totalQuantity = CartManager.instance.totalQuantity;
-
 
       final itemList = CartManager.instance.items.indexed.map((item) {
         final i = item.$1;
@@ -203,24 +369,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         );
       }).toList();
 
-      final preProcessAnonymousOrderRequest = PreProcessAnonymousOrderRequest(
-        customerName: "",
-        mobileNumber: "",
-        email: "ultra.thowfiq@gmail.com",
-        addr1: "",
-        addr2: "",
-        addr3: "",
-        addr4: "",
-        state: "",
-        pinCode: "",
-        country: "",
+      final preProcessOrderRequest = PreProcessOrderRequest(
+        isShippingSameAsBilling: true,
+        shippingAddressId: 0,
         itemList: itemList,
       );
 
-      final preProcessRes = await _apiService.post(CheckoutApiConstant.preProcessAnonymousOrder, json.encode(preProcessAnonymousOrderRequest));
+      final preProcessRes = await _apiService.post(CheckoutApiRoutes.preProcessOrder, json.encode(preProcessOrderRequest));
 
-      WebResponse<PreProcessAnonymousOrderResponse> preProcessResponse = WebResponse.fromJson(preProcessRes, (data) {
-        return PreProcessAnonymousOrderResponse.fromJson(data);
+      WebResponse<PreProcessOrderResponse> preProcessResponse = WebResponse.fromJson(preProcessRes, (data) {
+        return PreProcessOrderResponse.fromJson(data);
       });
 
       final batch = [
@@ -231,20 +389,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         )
       ];
 
-      final anonymousOrderRequest = CreateAnonymousSalesOrderRequest(
-        customerName: "",
-        mobileNumber: "8668050644",
-        email: "",
-        addr1: "",
-        addr2: "",
-        addr3: "",
-        addr4: "",
-        state: "",
-        pinCode: "",
-        country: "",
+      final orderRequest = CreateSalesOrderRequest(
         orderId: preProcessResponse.results.orderId,
         orderDate: preProcessResponse.results.orderDate,
         waybillNos: preProcessResponse.results.waybillNos,
+        isShippingSameAsBilling: true,
         rzpOrderId: "",
         rzpStatus: "",
         itemList: itemList,
@@ -253,14 +402,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         paymentType: "CASH_ON_DELIVERY",
       );
 
-      final createOrderRes = await _apiService.post(CheckoutApiConstant.processAnonymousOrder, json.encode(anonymousOrderRequest));
+      final createOrderRes = await _apiService.post(CheckoutApiRoutes.processOrder, json.encode(orderRequest));
 
-      WebResponse<CreateAnonymousSalesOrderResponse> createAnonymousOrderResponse = WebResponse.fromJson(createOrderRes, (data) {
-        return CreateAnonymousSalesOrderResponse.fromJson(data);
+      WebResponse<CreateSalesOrderResponse> createOrderResponse = WebResponse.fromJson(createOrderRes, (data) {
+        return CreateSalesOrderResponse.fromJson(data);
       });
       print(createOrderRes);
 
-      if(createAnonymousOrderResponse.statusCode == 200) {
+      if(createOrderResponse.statusCode == 200) {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

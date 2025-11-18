@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:ecommerce_mobile/globals/globals.dart';
-import 'package:ecommerce_mobile/modules/auth/constants/auth-api.constant.dart';
+import 'package:ecommerce_mobile/modules/auth/constants/auth-api.routes.dart';
 import 'package:ecommerce_mobile/modules/auth/types/login_with_password_response.dart';
 import 'package:ecommerce_mobile/modules/general/types/api.types.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
         'loginType': "user"
       };
 
-      final res = await _apiService.post(AuthApiConstant.loginWithPassword, json.encode(reqBody));
+      final res = await _apiService.post(AuthApiRoutes.loginWithPassword, json.encode(reqBody));
 
       WebResponse<LoginWithPasswordResponse> response = WebResponse.fromJson(res, (data) {
         return LoginWithPasswordResponse.fromJson(data);
@@ -107,6 +107,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Center(
+                        child: Image.asset(
+                          'assets/images/logo_transparent.png',
+                          fit: BoxFit.cover,
+                          width: 150,
+                        ),
+                      ),
+                      SizedBox(height: AppSpacing.xxl),
                       Text('Login to your account', style: AppTextStyles.h1),
                       SizedBox(height: AppSpacing.xs),
                       Text("It’s great to see you again.",
