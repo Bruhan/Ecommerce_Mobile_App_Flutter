@@ -1,24 +1,42 @@
-/// example: lib/routes/routes.dart
 class Routes {
+  // Core screens
   static const splash = '/';
   static const login = '/login';
   static const register = '/register';
   static const forgotPassword = '/forgot-password';
   static const otp = '/otp';
   static const resetPassword = '/reset-password';
+
+  // Home & Tabs
   static const home = '/home';
   static const search = '/search';
   static const cart = '/cart';
-  static const checkout = '/checkout';
   static const saved = '/saved';
+
+  // Notifications
+  static const notifications = '/notifications';
+
+  // Account-related
+  static const account = '/account';
+  static const myDetails = '/my-details';
+
+  // Product flow
   static const productDetails = '/product-details';
   static const reviews = '/reviews';
 
-  // NEW - addresses
+  // Checkout
+  static const checkout = '/checkout';
+
+  // Addresses
   static const addresses = '/addresses';
   static const addressesNew = '/addresses/new';
 
-  // NEW - payment
-  static const paymentMethod = '/payment-method';
-  static const paymentNewCard = '/payment-new-card';
+  // Payment
+  static const String paymentMethods = '/payment-methods';
+  static const String newCard = '/new-card';
+  static const String upi = '/payment-upi';
+
+  // Orders
+  static const orders = '/orders';
+  static const trackOrder = '/orders/track';
 }

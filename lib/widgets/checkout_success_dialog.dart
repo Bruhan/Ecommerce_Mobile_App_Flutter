@@ -11,7 +11,7 @@ class CheckoutSuccessDialog extends StatelessWidget {
     Key? key,
     this.onTrack,
     this.title = 'Congratulations!',
-    this.message = 'Your order has been placed.',
+    this.message = 'oops Your order has been placed.',
     this.actionText = 'Track Your Order',
   }) : super(key: key);
 

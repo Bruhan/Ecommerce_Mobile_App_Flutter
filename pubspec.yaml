@@ -42,6 +42,7 @@ dependencies:
   json_annotation: ^4.9.0
   google_maps_flutter: ^2.2.0
   uuid: ^3.0.6
+  intl: ^0.18.0
 
 dev_dependencies:
   flutter_test:
@@ -68,7 +69,10 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/splash_screen.jpg
+    - assets/images/logo_transparent.png
+    - assets/images/visa.png
+    - assets/images/mastercard.png
+    - assets/images/amex.png
 
 
   # To add assets to your application, add an assets section, like this:
