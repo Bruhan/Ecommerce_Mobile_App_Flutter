@@ -1,4 +1,3 @@
-// lib/modules/checkout/screens/checkout_screen.dart
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
