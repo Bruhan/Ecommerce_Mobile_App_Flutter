@@ -1,9 +1,12 @@
+// lib/modules/home/screens/addresses_screen.dart
 import 'dart:async';
-
+import 'package:ecommerce_mobile/globals/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+// return typed CustomerAddress on selection
+import 'package:ecommerce_mobile/modules/checkout/types/customer_address.dart';
 import '../../../services/address_manager.dart';
 
 class AddressesScreen extends StatefulWidget {
@@ -24,7 +27,6 @@ class _AddressesScreenState extends State<AddressesScreen> {
     super.initState();
     _addressesNotifier = AddressManager.instance.addresses;
 
-    // If manager hasn't been initialized elsewhere, initialize it here.
     if (_addressesNotifier.value.isEmpty) {
       AddressManager.instance.init();
     }
@@ -72,67 +74,103 @@ class _AddressesScreenState extends State<AddressesScreen> {
     );
   }
 
+  /// When apply is pressed we pop the selected CustomerAddress so
+  /// the caller (checkout screen) receives it.
   void _applySelected() {
     if (_selectedAddressId == null) return;
     final selected = _addressesNotifier.value.firstWhere((a) => a.id == _selectedAddressId);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Applied: ${selected.nickname}')));
+
+    // Build a map that matches your checkout CustomerAddress fields
+    final m = <String, dynamic>{
+      'id': selected.id,
+      'addr1': selected.nickname,
+      'addr2': selected.fullAddress,
+      'addr3': '',
+      'addr4': '',
+      'mobileNumber': '',
+      'state': '',
+      'country': '',
+      'latitude': selected.latitude,
+      'longitude': selected.longitude,
+    };
+
+    final cust = CustomerAddress.fromJson(m);
+    Navigator.of(context).pop(cust);
   }
 
   Widget _buildAddressCard(AddressModel address) {
     final isSelected = address.id == _selectedAddressId;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).dividerColor),
-        color: Theme.of(context).cardColor,
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.location_on_outlined, size: 28),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(address.nickname, style: Theme.of(context).textTheme.titleMedium),
-                    const SizedBox(width: 8),
-                    if (address.isDefault)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).highlightColor.withOpacity(0.08),
-                          borderRadius: BorderRadius.circular(12),
+    return InkWell(
+      onTap: () {
+        final m = <String, dynamic>{
+          'id': address.id,
+          'addr1': address.nickname,
+          'addr2': address.fullAddress,
+          'addr3': '',
+          'addr4': '',
+          'mobileNumber': '',
+          'state': '',
+          'country': '',
+          'latitude': address.latitude,
+          'longitude': address.longitude,
+        };
+        final cust = CustomerAddress.fromJson(m);
+        Navigator.of(context).pop(cust);
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Theme.of(context).dividerColor),
+          color: Theme.of(context).cardColor,
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.location_on_outlined, size: 28),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(address.nickname, style: Theme.of(context).textTheme.titleMedium),
+                      const SizedBox(width: 8),
+                      if (address.isDefault)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).highlightColor.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text('Default', style: Theme.of(context).textTheme.bodySmall),
                         ),
-                        child: Text('Default', style: Theme.of(context).textTheme.bodySmall),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  address.fullAddress,
-                  style: Theme.of(context).textTheme.bodySmall,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    address.fullAddress,
+                    style: Theme.of(context).textTheme.bodySmall,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Radio<String>(
-            value: address.id,
-            groupValue: _selectedAddressId,
-            onChanged: (v) async {
-              if (v == null) return;
-              setState(() => _selectedAddressId = v);
-              await AddressManager.instance.setDefault(v);
-            },
-          ),
-        ],
+            const SizedBox(width: 8),
+            Radio<String>(
+              value: address.id,
+              groupValue: _selectedAddressId,
+              onChanged: (v) async {
+                if (v == null) return;
+                setState(() => _selectedAddressId = v);
+                await AddressManager.instance.setDefault(v);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -182,7 +220,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                 ),
               ),
 
-              // Apply button pinned at bottom
+              // Apply button pinned at bottom; returns selected CustomerAddress to caller
               SizedBox(
                 width: double.infinity,
                 height: 56,

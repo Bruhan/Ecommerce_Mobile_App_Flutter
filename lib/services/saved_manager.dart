@@ -1,3 +1,4 @@
+// lib/services/saved_manager.dart
 import 'package:flutter/foundation.dart';
 class SavedManager {
   SavedManager._internal();

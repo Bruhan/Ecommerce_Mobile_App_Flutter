@@ -1,4 +1,3 @@
-// lib/routes/route_generator.dart
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/routes/routes.dart';
 
@@ -13,14 +12,17 @@ import 'package:ecommerce_mobile/modules/auth/screens/reset_password_screen.dart
 /// Cart / Checkout / Home
 import 'package:ecommerce_mobile/modules/cart/screens/cart_screen.dart';
 import 'package:ecommerce_mobile/modules/home/screens/home_shell.dart';
-import 'package:ecommerce_mobile/modules/home/screens/search_screen.dart';
 import 'package:ecommerce_mobile/modules/home/screens/saved_screen.dart';
+
+/// NEW SEARCH SCREENS
+import 'package:ecommerce_mobile/modules/home/screens/search_suggestions_screen.dart';
+import 'package:ecommerce_mobile/modules/home/screens/search_results_screen.dart';
 
 /// Products
 import 'package:ecommerce_mobile/modules/products/screens/product_details_screen.dart';
 import 'package:ecommerce_mobile/modules/products/screens/reviews_screen.dart';
 
-/// Addresses (Address Book)
+/// Addresses
 import 'package:ecommerce_mobile/modules/home/screens/addresses_screen.dart';
 import 'package:ecommerce_mobile/modules/home/screens/new_address_screen.dart';
 
@@ -36,6 +38,7 @@ import 'package:ecommerce_mobile/models/order_model.dart';
 
 /// Checkout
 import 'package:ecommerce_mobile/modules/checkout/screens/checkout_screen.dart';
+import 'package:ecommerce_mobile/modules/checkout/screens/payments_screen.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -43,7 +46,8 @@ class RouteGenerator {
     debugPrint('Route requested: ${settings.name} — args: ${settings.arguments?.runtimeType}');
 
     switch (settings.name) {
-      /// Auth
+
+      /// AUTH
       case Routes.splash:
         return MaterialPageRoute(builder: (_) => const SplashScreen(), settings: settings);
 
@@ -62,13 +66,33 @@ class RouteGenerator {
       case Routes.resetPassword:
         return MaterialPageRoute(builder: (_) => const ResetPasswordScreen(), settings: settings);
 
-      /// Home / Shell
+
+      /// HOME
       case Routes.home:
         return MaterialPageRoute(builder: (_) => const HomeShell(), settings: settings);
 
+      /// OLD SEARCH → Redirect to NEW SEARCH SUGGESTIONS
       case Routes.search:
-        return MaterialPageRoute(builder: (_) => const SearchScreen(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const SearchSuggestionsScreen(),
+          settings: settings,
+        );
 
+      /// NEW SEARCH SCREENS
+      case Routes.searchSuggestions:
+        return MaterialPageRoute(
+          builder: (_) => const SearchSuggestionsScreen(),
+          settings: settings,
+        );
+
+      case Routes.searchResults:
+        return MaterialPageRoute(
+          builder: (_) => const SearchResultsScreen(),
+          settings: RouteSettings(arguments: args),
+        );
+
+
+      /// CART, CHECKOUT, SAVED
       case Routes.cart:
         return MaterialPageRoute(builder: (_) => const CartScreen(), settings: settings);
 
@@ -78,16 +102,22 @@ class RouteGenerator {
       case Routes.saved:
         return MaterialPageRoute(builder: (_) => const SavedScreen(), settings: settings);
 
-      /// Addresses
+
+      /// PAYMENT (Checkout)
+      case Routes.payment:
+        return MaterialPageRoute(builder: (_) => const PaymentsScreen(), settings: settings);
+
+
+      /// ADDRESS BOOK
       case Routes.addresses:
         return MaterialPageRoute(builder: (_) => const AddressesScreen(), settings: settings);
 
       case Routes.addressesNew:
         return MaterialPageRoute(builder: (_) => const NewAddressScreen(), settings: settings);
 
-      /// Payment
+
+      /// PAYMENT
       case Routes.paymentMethods:
-        // Use non-const constructors to avoid const constructor errors if the class isn't const
         return MaterialPageRoute(builder: (_) => PaymentMethodScreen(), settings: settings);
 
       case Routes.newCard:
@@ -96,45 +126,42 @@ class RouteGenerator {
       case Routes.upi:
         return MaterialPageRoute(builder: (_) => UpiPaymentScreen(), settings: settings);
 
-      /// Product Details (accepts Map<String, dynamic> as arguments)
-      case Routes.productDetails: {
-        final Map<String, dynamic> productArgs =
-            (args is Map<String, dynamic>) ? args : <String, dynamic>{};
 
+      /// PRODUCTS
+      case Routes.productDetails:
+        final Map<String, dynamic> productArgs =
+            (args is Map<String, dynamic>) ? args : {};
         return MaterialPageRoute(
           builder: (_) => ProductDetailsScreen(data: productArgs),
           settings: settings,
         );
-      }
 
-      /// Reviews
       case Routes.reviews:
         return MaterialPageRoute(builder: (_) => const ReviewsScreen(), settings: settings);
 
-      /// Orders list
+
+      /// ORDERS
       case Routes.orders:
         return MaterialPageRoute(builder: (_) => const OrdersScreen(), settings: settings);
 
-      /// Track Order (expects an OrderModel in arguments)
       case Routes.trackOrder:
         if (args is OrderModel) {
           return MaterialPageRoute(builder: (_) => TrackOrderScreen(order: args), settings: settings);
-        } else {
-          return MaterialPageRoute(
-            builder: (_) => Scaffold(
-              appBar: AppBar(title: const Text('Invalid route')),
-              body: const Center(child: Text('Missing order data for tracking')),
-            ),
-            settings: settings,
-          );
         }
+        return MaterialPageRoute(
+          builder: (_) => const Scaffold(
+            body: Center(child: Text('Missing order data')),
+          ),
+          settings: settings,
+        );
 
+
+      /// DEFAULT
       default:
-        debugPrint('No route defined for ${settings.name}');
         return MaterialPageRoute(
           builder: (_) => Scaffold(
-            appBar: AppBar(title: const Text('Page not found')),
-            body: Center(child: Text('No route defined for ${settings.name}')),
+            appBar: AppBar(title: const Text("Page not found")),
+            body: Center(child: Text("No route defined for ${settings.name}")),
           ),
           settings: settings,
         );

@@ -1,10 +1,8 @@
-// lib/modules/payment/screens/payment_method_screen.dart
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
 import 'package:ecommerce_mobile/routes/routes.dart';
 import '../../../services/cart_manager.dart';
 
-/// Payment methods screen — shows Saved Cards + UPI tiles (logo support for cards)
 class PaymentMethodScreen extends StatefulWidget {
   const PaymentMethodScreen({super.key});
 
@@ -13,14 +11,14 @@ class PaymentMethodScreen extends StatefulWidget {
 }
 
 class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
-  // demo saved cards (replace with your data source)
+ 
   final List<_SavedCard> _cards = [
     _SavedCard(id: 'c1', brand: 'VISA', last4: '9931', isDefault: true),
     _SavedCard(id: 'c2', brand: 'MC', last4: '5421'),
     _SavedCard(id: 'c3', brand: 'CARD', last4: '8765'),
   ];
 
-  // start with no saved UPI entries — user will add them
+  
   final List<_UpiEntry> _upiEntries = [];
 
   String? _selectedCardId;
@@ -403,7 +401,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                child: Text('Apply (₹${total.toStringAsFixed(0)})', style: AppTextStyles.body?.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
+                child: Text('Apply', style: AppTextStyles.body?.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
               ),
             ),
           ]),

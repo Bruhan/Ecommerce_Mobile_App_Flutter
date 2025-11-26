@@ -26,6 +26,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   late final String? _productId;
   late final ValueNotifier<bool> _isSavedNotifier;
 
+  // NEW: track whether this product was added to cart during this screen session
+  bool _addedToCart = false;
+
   final List<Map<String, dynamic>> _reviews = [
     {
       'name': 'Wade Warren',
@@ -53,6 +56,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     _productId = _deriveId(widget.data);
     _isSavedNotifier = ValueNotifier<bool>(_productId != null && SavedManager.instance.isSaved(_productId!));
     SavedManager.instance.notifier.addListener(_savedListener);
+
+    // Optionally you could check cart manager here to mark already-in-cart,
+    // but to keep this change safe and compile-proof we only mark added when user adds.
+    _addedToCart = false;
   }
 
   void _savedListener() {
@@ -108,6 +115,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
+  /// ======= SAFE addToCart =======
+  /// CartManager.addItem returns void in your implementation,
+  /// so we simply call it and show the snackbar using a captured messenger.
   void _addToCart({
     required String id,
     required String title,
@@ -116,6 +126,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     required String format,
     required int quantity,
   }) {
+    // Capture messenger early (safe to reuse even if widget is popped later)
+    final messenger = ScaffoldMessenger.of(context);
+
     final item = CartItem(
       id: id,
       title: title,
@@ -125,14 +138,35 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       quantity: quantity,
     );
 
-    CartManager.instance.addItem(item);
+    // addItem returns void in your CartManager implementation
+    try {
+      CartManager.instance.addItem(item);
+    } catch (e, st) {
+      debugPrint('CartManager.addItem error: $e\n$st');
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Failed to add to cart')),
+      );
+      return;
+    }
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    // Mark as added locally so button becomes "Go to Cart"
+    if (mounted) {
+      setState(() {
+        _addedToCart = true;
+      });
+    }
+
+    // Show snackbar safely using captured messenger.
+    messenger.showSnackBar(
       SnackBar(
         content: Text('Added "$title" to cart'),
         action: SnackBarAction(
           label: 'View Cart',
-          onPressed: () => Navigator.pushNamed(context, Routes.cart),
+          onPressed: () {
+            if (mounted) {
+              Navigator.pushNamed(context, Routes.cart);
+            }
+          },
         ),
       ),
     );
@@ -220,7 +254,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              Text('${count}', style: AppTextStyles.caption),
+              Text('$count', style: AppTextStyles.caption),
             ],
           ),
         );
@@ -469,8 +503,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     SizedBox(
                                       width: 220,
                                       child: AppButton(
-                                        label: 'Add to Cart',
+                                        label: _addedToCart ? 'Go to Cart' : 'Add to Cart',
                                         onPressed: () {
+                                          if (_addedToCart) {
+                                            Navigator.pushNamed(context, Routes.cart);
+                                            return;
+                                          }
                                           final id = (data['id'] ?? title).toString();
                                           _addToCart(
                                             id: id,
@@ -651,6 +689,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 Row(
                   children: [
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Price', style: AppTextStyles.caption), Text('\₹${price.toInt()}', style: AppTextStyles.h2?.copyWith(fontSize: 22))])),
+
                     const SizedBox(width: 12),
                     // quantity + add button
                     Row(
@@ -672,8 +711,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         SizedBox(
                           width: 180,
                           child: AppButton(
-                            label: 'Add to Cart',
+                            label: _addedToCart ? 'Go to Cart' : 'Add to Cart',
                             onPressed: () {
+                              if (_addedToCart) {
+                                Navigator.pushNamed(context, Routes.cart);
+                                return;
+                              }
                               final id = (data['id'] ?? title).toString();
                               _addToCart(
                                 id: id,

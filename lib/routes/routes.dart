@@ -9,7 +9,9 @@ class Routes {
 
   // Home & Tabs
   static const home = '/home';
-  static const search = '/search';
+  static const search = '/search'; 
+  static const searchSuggestions = '/search-suggestions'; 
+  static const searchResults = '/search-results'; 
   static const cart = '/cart';
   static const saved = '/saved';
 
@@ -26,6 +28,7 @@ class Routes {
 
   // Checkout
   static const checkout = '/checkout';
+  static const String payment = '/payment';
 
   // Addresses
   static const addresses = '/addresses';

@@ -1,8 +1,10 @@
+// lib/modules/cart/screens/cart_screen.dart
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
 import 'package:ecommerce_mobile/services/cart_manager.dart';
 import 'package:ecommerce_mobile/models/cart_item.dart';
 import 'package:ecommerce_mobile/routes/routes.dart';
+import 'package:ecommerce_mobile/globals/text_styles.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -12,7 +14,6 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,14 +57,17 @@ class _CartScreenState extends State<CartScreen> {
                       final CartItem item = items[i];
                       return _CartTile(
                         item: item,
-                        onDelete: () {
-                          CartManager.instance.removeItem(item.id, size: item.size);
-                        },
+                        onDelete: () => _showRemoveOrSaveDialog(context, item),
                         onIncrement: () {
                           CartManager.instance.updateQuantity(item.id, item.size, item.quantity + 1);
                         },
                         onDecrement: () {
-                          CartManager.instance.updateQuantity(item.id, item.size, item.quantity - 1);
+                          final newQty = item.quantity - 1;
+                          if (newQty <= 0) {
+                            _showRemoveOrSaveDialog(context, item);
+                          } else {
+                            CartManager.instance.updateQuantity(item.id, item.size, newQty);
+                          }
                         },
                       );
                     },
@@ -102,7 +106,6 @@ class _CartScreenState extends State<CartScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      
                       Navigator.pushNamed(context, Routes.checkout); // if exists
                     },
                     child: Padding(
@@ -138,6 +141,158 @@ class _CartScreenState extends State<CartScreen> {
         Text(value, style: isTotal ? AppTextStyles.h2.copyWith(fontSize: 18) : AppTextStyles.body),
       ],
     );
+  }
+
+  /// Shows a centered dialog matching your app theme with two clear actions:
+  /// "Remove permanently" and "Move to Saved items".
+  /// If Move is chosen, the dialog auto-closes and navigates to the Saved screen.
+  Future<void> _showRemoveOrSaveDialog(BuildContext context, CartItem item) async {
+    final bool? action = await showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          child: Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(AppRadii.lg),
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 24, offset: const Offset(0, 8))],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // header row: thumbnail + title
+                Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        item.imageUrl,
+                        width: 64,
+                        height: 64,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(width: 64, height: 64, color: AppColors.bg),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(item.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: AppTextStyles.h3),
+                          const SizedBox(height: 6),
+                          Text('Size ${item.size} • ₹${item.price}', style: AppTextStyles.caption),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 14),
+
+                // message
+                Text(
+                  'Do you want to remove this item permanently or move it to Saved items? You can restore from Saved later.',
+                  style: AppTextStyles.body?.copyWith(color: AppColors.textSecondary),
+                ),
+
+                const SizedBox(height: 18),
+
+                // actions: Remove permanently (left) | Move to Saved items (right)
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          // return false indicates Remove permanently
+                          Navigator.of(ctx).pop(false);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: Colors.red.shade300),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadii.md)),
+                        ),
+                        child: Text('Remove permanently', style: AppTextStyles.body?.copyWith(color: Colors.red.shade700, fontWeight: FontWeight.w700)),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // return true indicates Move to saved
+                          Navigator.of(ctx).pop(true);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadii.md)),
+                        ),
+                        child: Text('Move to Saved items', style: AppTextStyles.body?.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    // action == true => Move to Saved items, action == false => Remove permanently, null => dismissed
+    if (action == null) return;
+
+    if (action == true) {
+      // Move to Saved items
+      final removed = CartManager.instance.moveToSaved(item.id, size: item.size);
+      if (removed != null) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Moved "${removed.title}" to saved items'),
+            action: SnackBarAction(
+              label: 'Undo',
+              onPressed: () {
+                CartManager.instance.addItem(removed);
+              },
+            ),
+          ),
+        );
+
+        // Auto-navigate to Saved screen if route exists
+        try {
+          Navigator.pushNamed(context, Routes.saved);
+        } catch (_) {
+          // silent fallback if saved route not defined
+        }
+      }
+    } else {
+      // Remove permanently (keep a copy for undo)
+      final copy = CartItem(
+        id: item.id,
+        title: item.title,
+        imageUrl: item.imageUrl,
+        price: item.price,
+        size: item.size,
+        quantity: item.quantity,
+      );
+      CartManager.instance.removePermanently(item.id, size: item.size);
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Removed "${copy.title}" permanently'),
+          action: SnackBarAction(
+            label: 'Undo',
+            onPressed: () {
+              CartManager.instance.addItem(copy);
+            },
+          ),
+        ),
+      );
+    }
   }
 }
 
@@ -190,7 +345,12 @@ class _CartTile extends StatelessWidget {
           // qty controls
           Column(
             children: [
-              InkWell(onTap: onDelete, child: Icon(Icons.delete_outline, color: Colors.red.shade400)),
+              // IconButton opens the two-action dialog
+              IconButton(
+                onPressed: onDelete,
+                icon: Icon(Icons.delete_outline, color: Colors.red.shade400),
+                tooltip: 'Remove or move to saved',
+              ),
               const SizedBox(height: AppSpacing.sm),
               Row(
                 children: [

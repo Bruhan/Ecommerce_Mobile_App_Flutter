@@ -3,6 +3,7 @@ import 'package:ecommerce_mobile/globals/theme.dart';
 import 'package:ecommerce_mobile/services/cart_manager.dart';
 import 'package:ecommerce_mobile/models/cart_item.dart';
 import 'package:ecommerce_mobile/routes/routes.dart';
+// NOTE: removed duplicate import of text_styles.dart to avoid AppTextStyles conflict.
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -12,8 +13,13 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  bool _isNavigating = false;
+
   @override
   Widget build(BuildContext context) {
+    // Debug: confirm this widget is the one being built
+    debugPrint('>>> Building CartScreen at ${DateTime.now()}');
+
     return Scaffold(
       appBar: AppBar(
         leading: const BackButton(),
@@ -114,10 +120,24 @@ class _CartScreenState extends State<CartScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                    
-                      Navigator.pushNamed(context, Routes.checkout);
-                    },
+                    onPressed: _isNavigating
+                        ? null
+                        : () async {
+                            // Prevent double navigation and provide debug logs
+                            setState(() => _isNavigating = true);
+                            debugPrint('Checkout button pressed — navigating to ${Routes.checkout}');
+                            try {
+                              // Navigate to checkout summary (routes.checkout => CheckoutScreen)
+                              await Navigator.pushNamed(context, Routes.checkout);
+                            } catch (e) {
+                              debugPrint('Navigation to Routes.checkout failed: $e');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Failed to open Checkout')),
+                              );
+                            } finally {
+                              if (mounted) setState(() => _isNavigating = false);
+                            }
+                          },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       child: Row(
@@ -132,7 +152,7 @@ class _CartScreenState extends State<CartScreen> {
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       elevation: 0,
-                      backgroundColor: AppColors.primary, 
+                      backgroundColor: AppColors.primary,
                     ),
                   ),
                 ),
