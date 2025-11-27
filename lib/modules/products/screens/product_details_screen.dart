@@ -1,4 +1,3 @@
-// lib/modules/products/screens/product_details_screen.dart
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
 import 'package:ecommerce_mobile/widgets/app_button.dart';
@@ -318,6 +317,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         leading: const BackButton(),
         title: Text('Details', style: AppTextStyles.h2),
         actions: [
+          // KEEP only the single heart in the details row (remove top overlay heart)
+          IconButton(
+            onPressed: () => SavedManager.instance.toggle(data),
+            icon: ValueListenableBuilder<bool>(
+              valueListenable: _isSavedNotifier,
+              builder: (_, saved, __) => Icon(saved ? Icons.favorite : Icons.favorite_border, color: saved ? Colors.red : Colors.black),
+            ),
+          ),
           IconButton(
             onPressed: () => Navigator.pushNamed(context, Routes.notifications),
             icon: const Icon(Icons.notifications_outlined, size: 22),
@@ -338,35 +345,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     flex: 1,
                     child: Column(
                       children: [
-                        Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(AppRadii.lg),
-                              child: Image.network(
-                                images.first,
-                                height: constraints.maxHeight * 0.75,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Container(height: constraints.maxHeight * 0.75, color: AppColors.surface),
-                              ),
-                            ),
-                            // heart overlay
-                            Positioned(
-                              right: 12,
-                              top: 12,
-                              child: ValueListenableBuilder<bool>(
-                                valueListenable: _isSavedNotifier,
-                                builder: (_, saved, __) => GestureDetector(
-                                  onTap: () => SavedManager.instance.toggle(data),
-                                  child: Container(
-                                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)]),
-                                    padding: const EdgeInsets.all(8),
-                                    child: Icon(saved ? Icons.favorite : Icons.favorite_border, color: saved ? Colors.red : Colors.black),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(AppRadii.lg),
+                          child: Image.network(
+                            images.first,
+                            height: constraints.maxHeight * 0.75,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(height: constraints.maxHeight * 0.75, color: AppColors.surface),
+                          ),
                         ),
                         const SizedBox(height: AppSpacing.md),
                         SizedBox(
@@ -401,6 +388,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             Row(
                               children: [
                                 Expanded(child: Text(title, style: AppTextStyles.h2.copyWith(fontSize: 22))),
+                                // keep only this heart (already in AppBar as well) — this one stays
                                 ValueListenableBuilder<bool>(
                                   valueListenable: _isSavedNotifier,
                                   builder: (_, saved, __) => IconButton(
@@ -605,33 +593,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: AppSpacing.md),
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(AppRadii.lg),
-                      child: Image.network(images.first, height: 260, width: double.infinity, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(height: 260, color: AppColors.surface)),
-                    ),
-                    Positioned(
-                      right: 12,
-                      top: 12,
-                      child: ValueListenableBuilder<bool>(
-                        valueListenable: _isSavedNotifier,
-                        builder: (_, saved, __) => GestureDetector(
-                          onTap: () => SavedManager.instance.toggle(data),
-                          child: Container(
-                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)]),
-                            padding: const EdgeInsets.all(8),
-                            child: Icon(saved ? Icons.favorite : Icons.favorite_border, color: saved ? Colors.red : Colors.black),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                // NOTE: removed the top-right overlay heart; image is just the image now
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(AppRadii.lg),
+                  child: Image.network(images.first, height: 260, width: double.infinity, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(height: 260, color: AppColors.surface)),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Row(
                   children: [
                     Expanded(child: Text(title, style: AppTextStyles.h2.copyWith(fontSize: 20))),
+                    // Keep only single heart here
                     ValueListenableBuilder<bool>(
                       valueListenable: _isSavedNotifier,
                       builder: (_, saved, __) => IconButton(

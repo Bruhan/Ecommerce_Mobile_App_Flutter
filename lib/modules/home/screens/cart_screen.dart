@@ -1,4 +1,3 @@
-// lib/modules/cart/screens/cart_screen.dart
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
 import 'package:ecommerce_mobile/services/cart_manager.dart';
@@ -143,9 +142,6 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  /// Shows a centered dialog matching your app theme with two clear actions:
-  /// "Remove permanently" and "Move to Saved items".
-  /// If Move is chosen, the dialog auto-closes and navigates to the Saved screen.
   Future<void> _showRemoveOrSaveDialog(BuildContext context, CartItem item) async {
     final bool? action = await showDialog<bool>(
       context: context,
