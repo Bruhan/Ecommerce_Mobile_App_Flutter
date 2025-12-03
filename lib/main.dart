@@ -1,9 +1,16 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+// 🔹 Globals (contains plant ID and theme selector)
 import 'globals/globals.dart';
+
+// 🔹 Bookstore theme (existing)
 import 'globals/theme.dart';
+
+// 🔹 Clothing-store theme (new)
+import 'globals/theme_cavier.dart';
+
 import 'modules/auth/lib/jwt.dart';
 import 'routes/route_generator.dart';
 import 'routes/routes.dart';
@@ -13,7 +20,7 @@ final storage = FlutterSecureStorage();
 
 String decodeJwt(String token) {
   final parts = token.split('.');
-  if(parts.length != 3) {
+  if (parts.length != 3) {
     throw Exception('Invalid JWT Token');
   }
 
@@ -27,13 +34,9 @@ String decodeJwt(String token) {
 
 Map<String, dynamic>? processJwt(String accessToken) {
   try {
-
     final decodedPayload = decodeJwt(accessToken);
     final payloadMap = json.decode(decodedPayload);
 
-    // print("Decoded Payload: $payloadMap");
-    // print("Expiration: ${payloadMap['exp']}");
-    // print("Subject: ${payloadMap['sub']}");
     return payloadMap;
   } catch (e) {
     print("Error decoding JWT: $e");
@@ -46,10 +49,7 @@ Future<void> clearStorageOnFirstLaunch() async {
   final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
 
   if (isFirstLaunch) {
-    // Clear all secure storage
     await storage.deleteAll();
-
-    // Set first launch flag to false
     await prefs.setBool('isFirstLaunch', false);
   }
 }
@@ -68,7 +68,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   Future<String> get jwtOrEmpty async {
     try {
       final jwt = await storage.read(key: "jwt").timeout(
@@ -86,10 +85,28 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    // --------------------------------------------------------------
+    // ✅ OPTION 2 — If-else condition BEFORE building MaterialApp
+    // --------------------------------------------------------------
+
+    ThemeData selectedTheme;
+
+    if (Globals.isClothingStore) {
+      // Clothing-store → Modern Minimal + Poppins (theme_cavier.dart)
+      selectedTheme = CavierTheme.themeData;
+    } else {
+      // Bookstore → Default Alphabit theme
+      selectedTheme = buildAppTheme();
+    }
+
+    // --------------------------------------------------------------
+    // MaterialApp now uses the selected theme
+    // --------------------------------------------------------------
+
     return MaterialApp(
       title: 'Alphabit Ecommerce App',
       debugShowCheckedModeBanner: false,
-      theme: buildAppTheme(),
+      theme: selectedTheme, // <--- IMPORTANT CHANGE
       initialRoute: Routes.splash,
       onGenerateRoute: (settings) => RouteGenerator.generateRoute(settings),
       builder: (context, child) {
@@ -98,47 +115,47 @@ class _MyAppState extends State<MyApp> {
           child: child,
         );
       },
-        home: FutureBuilder(
-            future: jwtOrEmpty,
-            builder: (context, snapshot) {
+      home: FutureBuilder(
+        future: jwtOrEmpty,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
 
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Scaffold(
-                  body: Center(child: CircularProgressIndicator()),
-                );
-              }
+          if (snapshot.hasError) {
+            debugPrint("Error loading JWT: ${snapshot.error}");
+            return _buildErrorScreen(context);
+          }
 
-              if (snapshot.hasError) {
-                debugPrint("Error loading JWT: ${snapshot.error}");
-                return _buildErrorScreen(context);
-              }
+          final token = snapshot.data ?? "";
 
-              final token = snapshot.data ?? "";
+          if (token.isEmpty) {
+            return _navigateTo(context, Routes.login);
+          }
 
-              if (token.isEmpty) {
-                return _navigateTo(context, Routes.login);
-              }
+          final decodedJWT = JWT.processJwt(token);
 
-              final decodedJWT = JWT.processJwt(token);
+          if (decodedJWT == null) {
+            return _navigateTo(context, Routes.login);
+          }
 
-              if (decodedJWT == null) {
-                return _navigateTo(context, Routes.login);
-              }
+          final expiration = DateTime.fromMillisecondsSinceEpoch(
+            decodedJWT["exp"] * 1000,
+          );
 
-              final expiration = DateTime.fromMillisecondsSinceEpoch(
-                  decodedJWT["exp"] * 1000);
+          if (expiration.isAfter(DateTime.now())) {
+            return _navigateTo(context, Routes.home);
+          } else {
+            return _navigateTo(context, Routes.login);
+          }
 
-              if (expiration.isAfter(DateTime.now())) {
-                  return _navigateTo(context, Routes.home);
-
-              } else {
-                return _navigateTo(context, Routes.login);
-              }
-
-          Future.microtask(() => Navigator.pushReplacementNamed(context, Routes.login));
+          Future.microtask(
+              () => Navigator.pushReplacementNamed(context, Routes.login));
           return Container();
-
-        })
+        },
+      ),
     );
   }
 
