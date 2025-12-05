@@ -1,4 +1,3 @@
-// lib/modules/checkout/screens/payments_screen.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
@@ -185,6 +184,12 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
 
   Widget _priceDetailsCard() {
     final pb = _priceBreakdown();
+
+    // Gilroy styles for price details
+    final TextStyle gilroyHeader = AppTextStyles.h2.copyWith(fontWeight: FontWeight.w700, fontFamily: 'Gilroy');
+    final TextStyle gilroyLabel = AppTextStyles.body.copyWith(fontFamily: 'Gilroy');
+    final TextStyle gilroyValue = AppTextStyles.body.copyWith(fontFamily: 'Gilroy');
+
     return Container(
       key: _priceDetailsKey,
       padding: const EdgeInsets.all(16),
@@ -195,18 +200,34 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 3))],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Price Details', style: AppTextStyles.h2.copyWith(fontWeight: FontWeight.w700, fontSize: 18)),
+        // Use Gilroy for the header
+        Text('Price Details', style: gilroyHeader),
         const SizedBox(height: 12),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Price (${CartManager.instance.items.length} items)', style: AppTextStyles.body), Text('₹${pb['subtotal']!.toStringAsFixed(2)}', style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700))]),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text('Price (${CartManager.instance.items.length} items)', style: gilroyLabel),
+          Text('₹${pb['subtotal']!.toStringAsFixed(2)}', style: gilroyValue.copyWith(fontWeight: FontWeight.w700))
+        ]),
         const SizedBox(height: 10),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Discount on MRP', style: AppTextStyles.caption), Text('- ₹${pb['discount']!.toStringAsFixed(2)}', style: AppTextStyles.caption.copyWith(color: AppColors.success))]),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text('Discount on MRP', style: gilroyLabel.copyWith(fontSize: gilroyLabel.fontSize ?? 14)),
+          Text('- ₹${pb['discount']!.toStringAsFixed(2)}', style: gilroyValue.copyWith(color: AppColors.success))
+        ]),
         const SizedBox(height: 10),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Platform Fee', style: AppTextStyles.caption), Text('₹0.00', style: AppTextStyles.caption)]),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text('Platform Fee', style: gilroyLabel),
+          Text('₹0.00', style: gilroyValue)
+        ]),
         const SizedBox(height: 10),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Shipping', style: AppTextStyles.caption), Text('₹${pb['shipping']!.toStringAsFixed(2)}', style: AppTextStyles.caption)]),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text('Shipping', style: gilroyLabel),
+          Text('₹${pb['shipping']!.toStringAsFixed(2)}', style: gilroyValue)
+        ]),
         const SizedBox(height: 12),
         const Divider(height: 24),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Total Amount', style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w800)), Text('₹${pb['total']!.toStringAsFixed(2)}', style: AppTextStyles.h2.copyWith(fontSize: 18, fontWeight: FontWeight.w900))]),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text('Total Amount', style: gilroyLabel.copyWith(fontWeight: FontWeight.w800)),
+          Text('₹${pb['total']!.toStringAsFixed(2)}', style: gilroyValue.copyWith(fontWeight: FontWeight.w900, fontSize: 18))
+        ]),
         const SizedBox(height: 12),
         Container(
           width: double.infinity,
@@ -254,7 +275,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
             GestureDetector(
               onTap: _scrollToPriceDetails,
               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text('₹${total.toStringAsFixed(0)}', style: AppTextStyles.h2.copyWith(fontWeight: FontWeight.w900)),
+                // Use Gilroy for the bold total in the toggle row as well
+                Text('₹${total.toStringAsFixed(0)}', style: AppTextStyles.h2.copyWith(fontWeight: FontWeight.w900, fontFamily: 'Gilroy')),
                 Row(children: [
                   Text('View price details', style: AppTextStyles.caption.copyWith(color: AppColors.primary)),
                   const SizedBox(width: 6),
@@ -282,7 +304,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
               child: InkWell(
                 onTap: _scrollToPriceDetails,
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-                  Text('₹${total.toStringAsFixed(0)}', style: AppTextStyles.h2.copyWith(fontWeight: FontWeight.w900)),
+                  // bottom-left uses Gilroy
+                  Text('₹${total.toStringAsFixed(0)}', style: AppTextStyles.h2.copyWith(fontWeight: FontWeight.w900, fontFamily: 'Gilroy')),
                   const SizedBox(height: 4),
                   Text('View price details', style: AppTextStyles.caption.copyWith(color: AppColors.primary)),
                 ]),
@@ -295,13 +318,13 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
               child: ElevatedButton(
                 onPressed: _isPlacing ? null : _onPayPressed,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFC107), // yellow
+                  backgroundColor: const Color(0xFF326638), // green
                   foregroundColor: Colors.black,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
                 child: _isPlacing
                     ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                    : Text('PAY', style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700, color: Colors.black)),
+                    : Text('PAY', style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700, color: Colors.white)),
               ),
             ),
           ]),

@@ -1,23 +1,47 @@
-// lib/globals/theme.dart
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
+/// theme.dart
+/// Unified theme file that keeps backward-compatible AppColors/AppTextStyles
+/// while enforcing Off-white + Brand Green design (brand = #326638).
+///
+/// Fonts expected (add to pubspec.yaml):
+/// family: Melodrama -> assets/fonts/Melodrama-Regular.ttf
+/// family: Gilroy     -> assets/fonts/Gilroy-Regular.ttf
 
 class AppColors {
-  static const primary = Colors.black;
-  static const surface = Colors.white;
-  static const bg = Color(0xFFF7F7F7);
-  static const textPrimary = Color(0xFF111111);
-  static const textSecondary = Color(0xFF6F6F6F);
-  static const divider = Color(0xFFE9E9E9);
-  static const fieldBorder = Color(0xFFE3E3E3);
-  static const success = Color(0xFF2ECC71);
-  static const danger = Color(0xFFE53935);
+  AppColors._();
 
-  // REQUIRED fields (must exist)
-  static const muted = Color(0xFF9A9A9A);
-  static const accent = Color(0xFFF6F6F6);
+  // Primary brand green (used for CTAs, headings, icons, selected states)
+  static const Color brand = Color(0xFF326638); // main green (#326638)
 
-  static Color fieldBackground = accent;
+  // Backwards-compatible alias: primary used across codebase
+  static const Color primary = brand;
+
+  // Surface (cards) and page background
+  static const Color surface = Color(0xFFFFFFFF); // pure white for cards/surfaces
+  static const Color bg = Color(0xFFFBF9F6); // off-white page background
+
+  // Text colors (use green family for headings/body per request)
+  static const Color textPrimary = brand; // headings & primary text
+  static const Color textSecondary = Color(0xFF8AA089); // lighter green for secondary text
+
+  // Borders / fields
+  static const Color divider = Color(0xFFEDEBE8);
+  static const Color fieldBorder = Color(0xFFE6E4E1);
+
+  // Button color alias
+  static const Color buttonGreen = brand;
+
+  // Muted / support colors
+  static const Color muted = Color(0xFF9FB89F); // even lighter green tint
+  static const Color accent = Color(0xFFF6F6F6); // neutral accent used earlier
+
+  // Status
+  static const Color success = Color(0xFF2ECC71);
+  static const Color danger = Color(0xFFE53935);
+
+  // Field background (slightly lighter than page)
+  static const Color fieldBackground = Color(0xFFF7F6F4);
 }
 
 class AppSpacing {
@@ -35,48 +59,92 @@ class AppRadii {
   static const lg = 14.0;
 }
 
+/// AppTextStyles
+/// Headings use Melodrama, body uses Gilroy.
+/// Keep the same named fields used across the project.
 class AppTextStyles {
-  static final h1 = GoogleFonts.inter(
+  AppTextStyles._();
+
+  static final h1 = TextStyle(
+    fontFamily: 'Melodrama',
     fontSize: 28,
     fontWeight: FontWeight.w700,
     height: 1.2,
     color: AppColors.textPrimary,
   );
 
-  static final h2 = GoogleFonts.inter(
+  static final h2 = TextStyle(
+    fontFamily: 'Melodrama',
     fontSize: 20,
     fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
   );
 
-  static final body = GoogleFonts.inter(
+  static final body = TextStyle(
+    fontFamily: 'Gilroy',
     fontSize: 14,
     color: AppColors.textPrimary,
+    height: 1.45,
   );
 
-  static final caption = GoogleFonts.inter(
+  static final caption = TextStyle(
+    fontFamily: 'Gilroy',
     fontSize: 12,
     color: AppColors.textSecondary,
   );
 
-  static final subtitle = GoogleFonts.inter(
+  static final subtitle = TextStyle(
+    fontFamily: 'Gilroy',
     fontSize: 14,
     color: AppColors.textSecondary,
     height: 1.4,
   );
+
+  static final label = TextStyle(
+    fontFamily: 'Gilroy',
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
 }
 
+/// Build the app theme (Material 3 compatible)
 ThemeData buildAppTheme() {
   final base = ThemeData(useMaterial3: true);
+
+  final colorScheme = ColorScheme(
+    brightness: Brightness.light,
+    primary: AppColors.primary,
+    onPrimary: AppColors.surface,
+    secondary: AppColors.buttonGreen,
+    onSecondary: AppColors.surface,
+    background: AppColors.bg,
+    onBackground: AppColors.textPrimary,
+    surface: AppColors.surface,
+    onSurface: AppColors.textPrimary,
+    error: AppColors.danger,
+    onError: Colors.white,
+  );
+
   return base.copyWith(
-    scaffoldBackgroundColor: Colors.white,
+    useMaterial3: true,
+    colorScheme: colorScheme,
+
+    scaffoldBackgroundColor: AppColors.bg,
     primaryColor: AppColors.primary,
-    appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.white,
+    canvasColor: AppColors.surface,
+
+    // AppBar
+    appBarTheme: AppBarTheme(
+      backgroundColor: AppColors.surface,
       foregroundColor: AppColors.textPrimary,
       elevation: 0,
       centerTitle: true,
+      titleTextStyle: AppTextStyles.h2.copyWith(fontSize: 18),
+      iconTheme: const IconThemeData(color: AppColors.brand),
     ),
+
+    // Inputs
     inputDecorationTheme: InputDecorationTheme(
       hintStyle: AppTextStyles.caption,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -84,28 +152,131 @@ ThemeData buildAppTheme() {
       fillColor: AppColors.fieldBackground,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadii.lg),
-        borderSide: const BorderSide(color: AppColors.fieldBorder),
+        borderSide: BorderSide(color: AppColors.fieldBorder),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadii.lg),
-        borderSide: const BorderSide(color: AppColors.fieldBorder),
+        borderSide: BorderSide(color: AppColors.fieldBorder),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadii.lg),
-        borderSide: const BorderSide(color: AppColors.textPrimary, width: 1.2),
+        borderSide: BorderSide(color: AppColors.buttonGreen, width: 1.4),
       ),
     ),
+
+    // Elevated Buttons (primary) - green
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.buttonGreen,
+        foregroundColor: AppColors.surface,
         minimumSize: const Size(double.infinity, 52),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadii.lg),
-        ),
-        textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadii.lg)),
+        textStyle: AppTextStyles.label.copyWith(color: AppColors.surface, fontSize: 16, fontWeight: FontWeight.w700),
       ),
     ),
+
+    // Outlined buttons - green border/text
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.buttonGreen,
+        side: BorderSide(color: AppColors.fieldBorder),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadii.lg)),
+        textStyle: AppTextStyles.label,
+      ),
+    ),
+
+    // Text buttons - green text
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: AppColors.buttonGreen,
+        textStyle: AppTextStyles.label,
+      ),
+    ),
+
+    // Chip theme (category chips)
+    chipTheme: ChipThemeData(
+      backgroundColor: AppColors.surface,
+      selectedColor: AppColors.buttonGreen.withOpacity(0.12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      labelStyle: AppTextStyles.body.copyWith(color: AppColors.textPrimary),
+      secondaryLabelStyle: AppTextStyles.body.copyWith(color: AppColors.textPrimary),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    ),
+
+    // Bottom nav
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: AppColors.surface,
+      selectedItemColor: AppColors.buttonGreen,
+      unselectedItemColor: AppColors.muted,
+      selectedLabelStyle: AppTextStyles.caption.copyWith(color: AppColors.buttonGreen),
+      unselectedLabelStyle: AppTextStyles.caption,
+      type: BottomNavigationBarType.fixed,
+      elevation: 6,
+    ),
+
+    // Card theme (CardThemeData)
+    cardTheme: CardThemeData(
+      color: AppColors.surface,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadii.md)),
+      margin: EdgeInsets.zero,
+    ),
+
+    // Dialog theme (DialogThemeData)
+    dialogTheme: DialogThemeData(
+      backgroundColor: AppColors.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      titleTextStyle: AppTextStyles.h2,
+      contentTextStyle: AppTextStyles.body,
+    ),
+
+    // Divider
     dividerColor: AppColors.divider,
+    dividerTheme: DividerThemeData(color: AppColors.divider, thickness: 1),
+
+    // Snackbar
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: AppColors.buttonGreen,
+      contentTextStyle: AppTextStyles.body.copyWith(color: AppColors.surface),
+      behavior: SnackBarBehavior.floating,
+      actionTextColor: AppColors.surface,
+    ),
+
+    // Icon theme default color -> brand green
+    iconTheme: const IconThemeData(color: AppColors.brand),
+
+    // Toggle components
+    switchTheme: SwitchThemeData(
+      thumbColor: MaterialStateProperty.resolveWith<Color?>(
+        (states) => states.contains(MaterialState.selected) ? AppColors.buttonGreen : AppColors.muted,
+      ),
+      trackColor: MaterialStateProperty.resolveWith<Color?>(
+        (states) => states.contains(MaterialState.selected)
+            ? AppColors.buttonGreen.withOpacity(0.32)
+            : AppColors.muted.withOpacity(0.18),
+      ),
+    ),
+
+    checkboxTheme: CheckboxThemeData(
+      fillColor: MaterialStateProperty.resolveWith<Color?>(
+        (states) => states.contains(MaterialState.selected) ? AppColors.buttonGreen : AppColors.muted,
+      ),
+    ),
+
+    radioTheme: RadioThemeData(
+      fillColor: MaterialStateProperty.resolveWith<Color?>(
+        (states) => states.contains(MaterialState.selected) ? AppColors.buttonGreen : AppColors.muted,
+      ),
+    ),
+
+    // Apply named text styles to theme textTheme as fallbacks
+    textTheme: TextTheme(
+      headlineLarge: AppTextStyles.h1,
+      headlineMedium: AppTextStyles.h2,
+      bodyLarge: AppTextStyles.body,
+      bodyMedium: AppTextStyles.body,
+      bodySmall: AppTextStyles.caption,
+      labelLarge: AppTextStyles.label,
+    ),
   );
 }

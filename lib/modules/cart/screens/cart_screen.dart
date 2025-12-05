@@ -105,7 +105,7 @@ class _CartScreenState extends State<CartScreen> {
                     children: [
                       _summaryRow('Sub-total', '\₹${subtotal.toString()}'),
                       const SizedBox(height: AppSpacing.sm),
-                      _summaryRow('VAT (%)', '\₹${vatAmount.toStringAsFixed(2)}'),
+                      _summaryRow('Discount (%)', '\₹${vatAmount.toStringAsFixed(2)}'),
                       const SizedBox(height: AppSpacing.sm),
                       _summaryRow('Shipping fee', '\₹${shipping.toString()}'),
                       const Divider(height: AppSpacing.lg * 1.2),

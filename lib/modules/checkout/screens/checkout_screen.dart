@@ -14,7 +14,7 @@ import 'package:ecommerce_mobile/modules/checkout/types/customer_address.dart';
 import 'package:ecommerce_mobile/modules/checkout/types/customer_billing_address.dart';
 
 import 'package:ecommerce_mobile/modules/checkout/constants/checkout-api.routes.dart';
-import 'apply_coupon_screen.dart'; // local screen
+import 'apply_coupon_screen.dart';
 
 double _toDouble(dynamic v) {
   if (v == null) return 0.0;
@@ -381,22 +381,35 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final total = pd['total']!;
     final savings = ((subtotal) - discount) - total;
 
+    // Apply Gilroy font to price details
+    // NOTE: ensure Gilroy is added in pubspec.yaml (assets/fonts) with family 'Gilroy'.
+    // Example:
+    // fonts:
+    //   - family: Gilroy
+    //     fonts:
+    //       - asset: assets/fonts/Gilroy-Regular.ttf
+    //       - asset: assets/fonts/Gilroy-Bold.ttf
+    //
+    final TextStyle gilroyHeader = AppTextStyles.h2.copyWith(fontWeight: FontWeight.w700, fontFamily: 'Gilroy');
+    final TextStyle gilroyLabel = AppTextStyles.body.copyWith(fontFamily: 'Gilroy');
+    final TextStyle gilroyValue = AppTextStyles.body.copyWith(fontFamily: 'Gilroy');
+
     final header = Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Text("Price Details", style: AppTextStyles.h2.copyWith(fontWeight: FontWeight.w700)),
+      Text("Price Details", style: gilroyHeader),
       Icon(expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
     ]);
 
     final expandedView = Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const SizedBox(height: AppSpacing.sm),
-      _priceRow("Price (${CartManager.instance.items.length} items)", '₹${subtotal.toStringAsFixed(2)}'),
+      _priceRowWithStyle("Price (${CartManager.instance.items.length} items)", '₹${subtotal.toStringAsFixed(2)}', gilroyLabel, gilroyValue),
       const SizedBox(height: AppSpacing.sm),
-      _priceRow("Discount on MRP", '- ₹${discount.toStringAsFixed(2)}', valueColor: Colors.green),
+      _priceRowWithStyle("Discount on MRP", '- ₹${discount.toStringAsFixed(2)}', gilroyLabel, gilroyValue.copyWith(color: Colors.green)),
       const SizedBox(height: AppSpacing.sm),
-      _priceRow("Platform Fee", '₹${platformFee.toStringAsFixed(2)}'),
+      _priceRowWithStyle("Platform Fee", '₹${platformFee.toStringAsFixed(2)}', gilroyLabel, gilroyValue),
       const SizedBox(height: AppSpacing.sm),
-      _priceRow("Shipping", '₹${shipping.toStringAsFixed(2)}'),
+      _priceRowWithStyle("Shipping", '₹${shipping.toStringAsFixed(2)}', gilroyLabel, gilroyValue),
       const Divider(height: 28),
-      _priceRow("Total Amount", '₹${total.toStringAsFixed(2)}', isTotal: true),
+      _priceRowWithStyle("Total Amount", '₹${total.toStringAsFixed(2)}', gilroyLabel.copyWith(fontWeight: FontWeight.w700), gilroyValue.copyWith(fontWeight: FontWeight.w800, fontSize: 16), isTotal: true),
       const SizedBox(height: AppSpacing.md),
       Container(
         width: double.infinity,
@@ -424,6 +437,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           duration: const Duration(milliseconds: 250),
         )
       ]),
+    );
+  }
+
+  // helper that allows applying the Gilroy text styles for price rows
+  Widget _priceRowWithStyle(String label, String value, TextStyle labelStyle, TextStyle valueStyle, {bool isTotal = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(child: Text(label, style: isTotal ? labelStyle : labelStyle)),
+        const SizedBox(width: AppSpacing.sm),
+        Text(value, style: isTotal ? valueStyle : valueStyle),
+      ],
     );
   }
 
@@ -465,6 +490,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         animation: CartManager.instance,
         builder: (context, _) {
           final total = CartManager.instance.totalPrice;
+
+          // bottom-left price uses Gilroy font
+          final bottomLeftStyle = AppTextStyles.h2.copyWith(fontSize: 18, fontWeight: FontWeight.w800, fontFamily: 'Gilroy');
+
           return SafeArea(
             top: false,
             child: Container(
@@ -479,7 +508,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         tween: Tween<double>(begin: total, end: total),
                         duration: const Duration(milliseconds: 400),
                         builder: (context, value, child) {
-                          return Text('₹${value.toStringAsFixed(2)}', style: AppTextStyles.h2.copyWith(fontSize: 18, fontWeight: FontWeight.w800));
+                          return Text('₹${value.toStringAsFixed(2)}', style: bottomLeftStyle);
                         },
                       ),
                       const SizedBox(height: 4),
@@ -495,8 +524,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     onPressed: () {
                       Navigator.pushNamed(context, Routes.payment);
                     },
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.amber[700], shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-                    child: Text('Continue', style: AppTextStyles.body.copyWith(color: Colors.black, fontWeight: FontWeight.w700)),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green[700], shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                    child: Text('Continue', style: AppTextStyles.body.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
                   ),
                 ),
               ]),

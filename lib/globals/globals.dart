@@ -1,7 +1,7 @@
 class Globals {
   // Bookstore Plant ID: C2620614616S2T
   // Clothing Store Plant ID: C7416406502S2T
-  static String plant = "C7416406502S2T"; // default: bookstore
+  static String plant = "C2620614616S2T"; // default: bookstore
 
   static bool get isClothingStore =>
       plant == "C7416406502S2T";

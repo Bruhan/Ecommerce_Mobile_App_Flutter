@@ -1,16 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-// 🔹 Globals (contains plant ID and theme selector)
 import 'globals/globals.dart';
-
-// 🔹 Bookstore theme (existing)
 import 'globals/theme.dart';
-
-// 🔹 Clothing-store theme (new)
 import 'globals/theme_cavier.dart';
-
 import 'modules/auth/lib/jwt.dart';
 import 'routes/route_generator.dart';
 import 'routes/routes.dart';
@@ -85,28 +78,19 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    // --------------------------------------------------------------
-    // ✅ OPTION 2 — If-else condition BEFORE building MaterialApp
-    // --------------------------------------------------------------
 
     ThemeData selectedTheme;
-
+    //plant theme using conditions 
     if (Globals.isClothingStore) {
-      // Clothing-store → Modern Minimal + Poppins (theme_cavier.dart)
       selectedTheme = CavierTheme.themeData;
     } else {
-      // Bookstore → Default Alphabit theme
       selectedTheme = buildAppTheme();
     }
-
-    // --------------------------------------------------------------
-    // MaterialApp now uses the selected theme
-    // --------------------------------------------------------------
 
     return MaterialApp(
       title: 'Alphabit Ecommerce App',
       debugShowCheckedModeBanner: false,
-      theme: selectedTheme, // <--- IMPORTANT CHANGE
+      theme: selectedTheme, // plant 
       initialRoute: Routes.splash,
       onGenerateRoute: (settings) => RouteGenerator.generateRoute(settings),
       builder: (context, child) {

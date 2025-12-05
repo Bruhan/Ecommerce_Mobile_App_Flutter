@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../globals/theme.dart';
 
 class AppTextField extends StatelessWidget {
@@ -21,6 +22,7 @@ class AppTextField extends StatelessWidget {
     this.minLines,
     this.contentPadding,
     this.autofillHints,
+    this.inputFormatters,
     this.textCapitalization = TextCapitalization.none,
   });
 
@@ -28,6 +30,7 @@ class AppTextField extends StatelessWidget {
   final TextEditingController? controller;
   final String? hint;
   final bool obscure;
+  final List<TextInputFormatter>? inputFormatters;
 
   // Icons
   final Widget? prefix;
@@ -71,6 +74,7 @@ class AppTextField extends StatelessWidget {
       textCapitalization: textCapitalization,
       maxLines: obscure ? 1 : (maxLines ?? 1),
       minLines: minLines,
+      inputFormatters: inputFormatters, // <-- forwarded here
       style: AppTextStyles.body,
       decoration: InputDecoration(
         hintText: hint,
