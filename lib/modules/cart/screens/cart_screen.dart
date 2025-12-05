@@ -3,7 +3,6 @@ import 'package:ecommerce_mobile/globals/theme.dart';
 import 'package:ecommerce_mobile/services/cart_manager.dart';
 import 'package:ecommerce_mobile/models/cart_item.dart';
 import 'package:ecommerce_mobile/routes/routes.dart';
-// NOTE: removed duplicate import of text_styles.dart to avoid AppTextStyles conflict.
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -17,7 +16,7 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Debug: confirm this widget is the one being built
+  
     debugPrint('>>> Building CartScreen at ${DateTime.now()}');
 
     return Scaffold(
