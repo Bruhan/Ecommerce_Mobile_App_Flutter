@@ -1,27 +1,12 @@
 import 'package:flutter/material.dart';
 
-/// theme.dart
-/// Unified theme file that keeps backward-compatible AppColors/AppTextStyles
-/// while enforcing Off-white + Brand Green design (brand = #326638).
-///
-/// Fonts expected (add to pubspec.yaml):
-/// family: Melodrama -> assets/fonts/Melodrama-Regular.ttf
-/// family: Gilroy     -> assets/fonts/Gilroy-Regular.ttf
-
 class AppColors {
   AppColors._();
 
-  // Primary brand green (used for CTAs, headings, icons, selected states)
-  static const Color brand = Color(0xFF326638); // main green (#326638)
-
-  // Backwards-compatible alias: primary used across codebase
+  static const Color brand = Color(0xFF326638); //greee color
   static const Color primary = brand;
-
-  // Surface (cards) and page background
-  static const Color surface = Color(0xFFFFFFFF); // pure white for cards/surfaces
-  static const Color bg = Color(0xFFFBF9F6); // off-white page background
-
-  // Text colors (use green family for headings/body per request)
+  static const Color surface = Color(0xFFFFFFFF); // pure white 
+  static const Color bg = Color(0xFFFBF9F6); // off-white 
   static const Color textPrimary = brand; // headings & primary text
   static const Color textSecondary = Color(0xFF8AA089); // lighter green for secondary text
 
@@ -59,9 +44,6 @@ class AppRadii {
   static const lg = 14.0;
 }
 
-/// AppTextStyles
-/// Headings use Melodrama, body uses Gilroy.
-/// Keep the same named fields used across the project.
 class AppTextStyles {
   AppTextStyles._();
 

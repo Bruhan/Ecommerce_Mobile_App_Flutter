@@ -1,3 +1,4 @@
+// lib/modules/products/screens/product_details_screen.dart
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
 import 'package:ecommerce_mobile/widgets/app_button.dart';
@@ -114,9 +115,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  /// ======= SAFE addToCart =======
-  /// CartManager.addItem returns void in your implementation,
-  /// so we simply call it and show the snackbar using a captured messenger.
   void _addToCart({
     required String id,
     required String title,
@@ -179,7 +177,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: AppSpacing.lg),
-        Text('More Books By $author', style: AppTextStyles.h2.copyWith(fontSize: 18)),
+        Text('More Books By $author', style: AppTextStyles.h2?.copyWith(fontSize: 18)),
         const SizedBox(height: AppSpacing.md),
         SizedBox(
           height: 170,
@@ -345,14 +343,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     flex: 1,
                     child: Column(
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(AppRadii.lg),
-                          child: Image.network(
-                            images.first,
-                            height: constraints.maxHeight * 0.75,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(height: constraints.maxHeight * 0.75, color: AppColors.surface),
+                        // Make the image flexible to avoid fixed height overflow
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(AppRadii.lg),
+                            child: Image.network(
+                              images.first,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(color: AppColors.surface),
+                            ),
                           ),
                         ),
                         const SizedBox(height: AppSpacing.md),
@@ -374,7 +374,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                   const SizedBox(width: 28),
 
-                  // right column: details
+                  // right column: details (scrollable)
                   Expanded(
                     flex: 1,
                     child: SingleChildScrollView(
@@ -387,7 +387,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             const SizedBox(height: AppSpacing.sm),
                             Row(
                               children: [
-                                Expanded(child: Text(title, style: AppTextStyles.h2.copyWith(fontSize: 22))),
+                                Expanded(child: Text(title, style: AppTextStyles.h2.copyWith(fontSize: 22), maxLines: 3, overflow: TextOverflow.ellipsis)),
+                                const SizedBox(width: 8),
                                 // keep only this heart (already in AppBar as well) — this one stays
                                 ValueListenableBuilder<bool>(
                                   valueListenable: _isSavedNotifier,
@@ -401,7 +402,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             const SizedBox(height: 8),
                             Text('by $author', style: AppTextStyles.body?.copyWith(fontWeight: FontWeight.w700)),
                             const SizedBox(height: 6),
-                            Row(children: [if (publisher.isNotEmpty) Text(publisher, style: AppTextStyles.caption), if (edition.isNotEmpty) const SizedBox(width: 12), if (edition.isNotEmpty) Text(edition, style: AppTextStyles.caption?.copyWith(color: mutedColor))]),
+                            Row(
+                              children: [
+                                if (publisher.isNotEmpty) Flexible(child: Text(publisher, style: AppTextStyles.caption)),
+                                if (edition.isNotEmpty) const SizedBox(width: 12),
+                                if (edition.isNotEmpty) Flexible(child: Text(edition, style: AppTextStyles.caption?.copyWith(color: mutedColor))),
+                              ],
+                            ),
                             const SizedBox(height: 12),
 
                             GestureDetector(
@@ -488,8 +495,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                       ],
                                     ),
                                     const SizedBox(height: 8),
-                                    SizedBox(
-                                      width: 220,
+                                    ConstrainedBox(
+                                      constraints: const BoxConstraints(maxWidth: 220),
                                       child: AppButton(
                                         label: _addedToCart ? 'Go to Cart' : 'Add to Cart',
                                         onPressed: () {
@@ -540,7 +547,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 children: [
                                   Row(
                                     children: [
-                                      Text('Reviews', style: AppTextStyles.h2.copyWith(fontSize: 20)),
+                                      Expanded(child: Text('Reviews', style: AppTextStyles.h2.copyWith(fontSize: 20))),
                                       const Spacer(),
                                       TextButton(onPressed: () {}, child: const Text('Write a review'))
                                     ],
@@ -601,7 +608,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 const SizedBox(height: AppSpacing.md),
                 Row(
                   children: [
-                    Expanded(child: Text(title, style: AppTextStyles.h2.copyWith(fontSize: 20))),
+                    Expanded(child: Text(title, style: AppTextStyles.h2.copyWith(fontSize: 20), maxLines: 3, overflow: TextOverflow.ellipsis)),
+                    const SizedBox(width: 8),
                     // Keep only single heart here
                     ValueListenableBuilder<bool>(
                       valueListenable: _isSavedNotifier,
@@ -679,8 +687,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           child: Container(padding: const EdgeInsets.all(6), decoration: BoxDecoration(border: Border.all(color: AppColors.fieldBorder), borderRadius: BorderRadius.circular(6)), child: const Icon(Icons.add, size: 18)),
                         ),
                         const SizedBox(width: 12),
-                        SizedBox(
-                          width: 180,
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 180),
                           child: AppButton(
                             label: _addedToCart ? 'Go to Cart' : 'Add to Cart',
                             onPressed: () {
@@ -716,7 +724,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(children: [Text('Reviews', style: AppTextStyles.h2.copyWith(fontSize: 20)), const Spacer(), TextButton(onPressed: () {}, child: const Text('Write a review'))]),
+                      Row(children: [Expanded(child: Text('Reviews', style: AppTextStyles.h2.copyWith(fontSize: 20))), const Spacer(), TextButton(onPressed: () {}, child: const Text('Write a review'))]),
                       const SizedBox(height: AppSpacing.sm),
                       Row(crossAxisAlignment: CrossAxisAlignment.center, children: [Text(rating.toStringAsFixed(1), style: AppTextStyles.h1.copyWith(fontSize: 26)), const SizedBox(width: AppSpacing.md), Column(crossAxisAlignment: CrossAxisAlignment.start, children: [_buildStars(rating, iconSize: 18), const SizedBox(height: 6), Text('$reviewsCount Ratings', style: AppTextStyles.caption)])]),
                       const SizedBox(height: AppSpacing.md),

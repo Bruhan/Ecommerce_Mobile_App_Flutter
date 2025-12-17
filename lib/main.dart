@@ -4,7 +4,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'globals/globals.dart';
 import 'globals/theme.dart';
 import 'globals/theme_cavier.dart';
-import 'modules/auth/lib/jwt.dart';
 import 'routes/route_generator.dart';
 import 'routes/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,11 +27,10 @@ String decodeJwt(String token) {
 Map<String, dynamic>? processJwt(String accessToken) {
   try {
     final decodedPayload = decodeJwt(accessToken);
-    final payloadMap = json.decode(decodedPayload);
-
+    final payloadMap = json.decode(decodedPayload) as Map<String, dynamic>;
     return payloadMap;
   } catch (e) {
-    print("Error decoding JWT: $e");
+    debugPrint("Error decoding JWT: $e");
   }
   return null;
 }
@@ -78,9 +76,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-
     ThemeData selectedTheme;
-    //plant theme using conditions 
+    // plant theme using conditions
     if (Globals.isClothingStore) {
       selectedTheme = CavierTheme.themeData;
     } else {
@@ -90,7 +87,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Alphabit Ecommerce App',
       debugShowCheckedModeBanner: false,
-      theme: selectedTheme, // plant 
+      theme: selectedTheme,
       initialRoute: Routes.splash,
       onGenerateRoute: (settings) => RouteGenerator.generateRoute(settings),
       builder: (context, child) {
@@ -99,7 +96,7 @@ class _MyAppState extends State<MyApp> {
           child: child,
         );
       },
-      home: FutureBuilder(
+      home: FutureBuilder<String>(
         future: jwtOrEmpty,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -119,25 +116,32 @@ class _MyAppState extends State<MyApp> {
             return _navigateTo(context, Routes.login);
           }
 
-          final decodedJWT = JWT.processJwt(token);
+          final decodedJWT = processJwt(token);
 
           if (decodedJWT == null) {
             return _navigateTo(context, Routes.login);
           }
 
-          final expiration = DateTime.fromMillisecondsSinceEpoch(
-            decodedJWT["exp"] * 1000,
-          );
+          // Safe extraction of exp claim (supports int/double/string)
+          final dynamic expValue = decodedJWT["exp"];
+          final int expSeconds;
+          if (expValue is int) {
+            expSeconds = expValue;
+          } else if (expValue is double) {
+            expSeconds = expValue.toInt();
+          } else if (expValue is String) {
+            expSeconds = int.tryParse(expValue) ?? 0;
+          } else {
+            expSeconds = 0;
+          }
+
+          final expiration = DateTime.fromMillisecondsSinceEpoch(expSeconds * 1000);
 
           if (expiration.isAfter(DateTime.now())) {
             return _navigateTo(context, Routes.home);
           } else {
             return _navigateTo(context, Routes.login);
           }
-
-          Future.microtask(
-              () => Navigator.pushReplacementNamed(context, Routes.login));
-          return Container();
         },
       ),
     );

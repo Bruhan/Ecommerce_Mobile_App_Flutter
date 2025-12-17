@@ -1,4 +1,3 @@
-// lib/modules/home/screens/filters_bottom_sheet.dart
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
 
@@ -35,7 +34,7 @@ class _FilterSheetContent extends StatefulWidget {
 
 class _FilterSheetContentState extends State<_FilterSheetContent> {
   // Sort options
-  final List<String> _sortOptions = ['Relevance', 'Price: Low - High', 'Price: High - Low', 'Newest', 'Top Rated'];
+  final List<String> _sortOptions = ['Relevance shit', 'Price: Low - High', 'Price: High - Low', 'Newest', 'Top Rated'];
   String _selectedSort = 'Relevance';
 
   // Price range (defaults)

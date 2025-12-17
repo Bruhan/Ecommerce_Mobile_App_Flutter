@@ -1,9 +1,10 @@
+// lib/modules/orders/screens/orders_screen.dart
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
 import 'package:ecommerce_mobile/models/order_model.dart';
 import 'package:ecommerce_mobile/modules/orders/screens/track_order_screen.dart';
 import 'package:ecommerce_mobile/routes/routes.dart';
-import 'package:ecommerce_mobile/services/order_manager.dart'; // <<-- ensure this exists
+import 'package:ecommerce_mobile/services/order_manager.dart';
 
 class OrdersScreen extends StatefulWidget {
   static const routeName = Routes.orders;
@@ -18,16 +19,17 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
   String? _error;
   bool _processedDeepLink = false;
 
-  // Safe text style getters — fallback if tokens missing
+  // Safe style getters
   TextStyle _h2() => AppTextStyles.h2 ?? const TextStyle(fontSize: 18, fontWeight: FontWeight.w700);
-  TextStyle _h3() =>
-      AppTextStyles.body?.copyWith(fontSize: 16, fontWeight: FontWeight.w700) ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.w700);
+  TextStyle _h3() => AppTextStyles.body?.copyWith(fontSize: 16, fontWeight: FontWeight.w700)
+      ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.w700);
   TextStyle _body() => AppTextStyles.body ?? const TextStyle(fontSize: 14);
   TextStyle _caption() => AppTextStyles.caption ?? const TextStyle(fontSize: 12, color: Colors.grey);
 
   @override
   void initState() {
     super.initState();
+    // Two tabs: Ongoing and Completed
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -37,7 +39,7 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
     super.dispose();
   }
 
-  // snapshot-safe getter
+  // Snapshot-safe getter for existing orders
   List<OrderModel> _currentOrdersSnapshot() {
     final vl = OrderManager.instance.orders;
     if (vl is ValueNotifier<List<OrderModel>>) {
@@ -50,68 +52,57 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    if (!_processedDeepLink) {
-      _processedDeepLink = true;
+    if (_processedDeepLink) return;
+    _processedDeepLink = true;
 
-      final args = ModalRoute.of(context)?.settings.arguments;
-      debugPrint('OrdersScreen received args: $args');
+    final args = ModalRoute.of(context)?.settings.arguments;
+    debugPrint('OrdersScreen received args: $args');
 
-      if (args is Map && args['openTrack'] == true && args['orderId'] != null) {
-        final String orderId = args['orderId'].toString();
+    if (args is Map && args['openTrack'] == true && args['orderId'] != null) {
+      final orderId = args['orderId'].toString();
 
-        // attempt immediate open
-        final currentOrders = _currentOrdersSnapshot();
-        OrderModel? existing;
-        try {
-          existing = currentOrders.firstWhere((o) => o.id.toString() == orderId.toString());
-        } catch (_) {
-          existing = null;
-        }
+      // try immediate open
+      final currentOrders = _currentOrdersSnapshot();
+      OrderModel? found;
+      try {
+        found = currentOrders.firstWhere((o) => o.id.toString() == orderId.toString());
+      } catch (_) {
+        found = null;
+      }
 
-        if (existing != null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (found != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (_) => TrackOrderScreen(order: found!)));
+        });
+      } else {
+        // listen until order appears
+        final vl = OrderManager.instance.orders;
+        if (vl is ValueNotifier<List<OrderModel>>) {
+          void listener() {
+            final updated = List<OrderModel>.from(vl.value);
+            OrderModel? f;
             try {
-              Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (_) => TrackOrderScreen(order: existing!)));
-            } catch (e) {
-              debugPrint('Failed to push TrackOrder (immediate): $e');
-              Navigator.push(context, MaterialPageRoute(builder: (_) => TrackOrderScreen(order: existing!)));
+              f = updated.firstWhere((o) => o.id.toString() == orderId.toString());
+            } catch (_) {
+              f = null;
             }
-          });
-        } else {
-          final vl = OrderManager.instance.orders;
-          if (vl is ValueNotifier<List<OrderModel>>) {
-            void listener() {
-              final updated = List<OrderModel>.from(vl.value);
-              OrderModel? found;
+            if (f != null) {
               try {
-                found = updated.firstWhere((o) => o.id.toString() == orderId.toString());
-              } catch (_) {
-                found = null;
-              }
-
-              if (found != null) {
-                try {
-                  vl.removeListener(listener);
-                } catch (_) {}
-                if (mounted) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    try {
-                      Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (_) => TrackOrderScreen(order: found!)));
-                    } catch (e) {
-                      debugPrint('Failed to push TrackOrder (deferred): $e');
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => TrackOrderScreen(order: found!)));
-                    }
-                  });
-                }
+                vl.removeListener(listener);
+              } catch (_) {}
+              if (mounted) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (_) => TrackOrderScreen(order: f!)));
+                });
               }
             }
-
-            vl.addListener(listener);
-          } else {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Order not loaded yet. Check My Orders later.')));
-            });
           }
+
+          vl.addListener(listener);
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Order not loaded yet. Check My Orders later.')));
+          });
         }
       }
     }
@@ -151,11 +142,13 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
 
   Widget _statusPill(OrderStatus s) {
     final label = _statusText(s);
-    final bg = _statusColor(s).withOpacity(0.12);
     final fg = _statusColor(s);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        color: fg.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Text(label, style: _caption().copyWith(color: fg, fontWeight: FontWeight.w700)),
     );
   }
@@ -164,13 +157,12 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
     final item = order.items.isNotEmpty ? order.items.first : null;
     final image = item?.imageUrl ?? '';
     final title = item?.title ?? 'Unknown title';
-    final authorOrSize = item?.size ?? '';
+    final subtitle = item?.size ?? '';
     final price = item?.price ?? 0;
-    final status = order.status;
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -183,19 +175,20 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
                   : Container(width: 84, height: 110, color: AppColors.bg),
             ),
             const SizedBox(width: 12),
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: _h3(), maxLines: 2, overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 6),
-                  Text(authorOrSize, style: _caption()),
+                  Text(subtitle, style: _caption()),
                   const SizedBox(height: 8),
                   Row(
                     children: [
                       Text('₹${price.toStringAsFixed(0)}', style: _h2().copyWith(fontSize: 16)),
                       const SizedBox(width: 8),
-                      _statusPill(status),
+                      _statusPill(order.status),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -205,54 +198,27 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
                 ],
               ),
             ),
+
             Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 120),
-                  child: SizedBox(
-                    height: 40,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        debugPrint('TRACK pressed for order ${order.id} -> forcing root navigator push');
-                        try {
-                          Navigator.of(context, rootNavigator: true).push(
-                            MaterialPageRoute(builder: (_) => TrackOrderScreen(order: order)),
-                          );
-                        } catch (e) {
-                          debugPrint('Direct root push failed: $e — falling back to local push.');
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => TrackOrderScreen(order: order)));
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary ?? Colors.black,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        minimumSize: const Size(0, 40),
-                      ),
-                      child: Text(ongoing ? 'Track Order' : 'Leave Review', style: _body().copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
+                SizedBox(
+                  height: 40,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (_) => TrackOrderScreen(order: order)));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      minimumSize: const Size(0, 40),
                     ),
+                    child: Text(ongoing ? 'Track Order' : 'Leave Review', style: _body().copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
                   ),
                 ),
-                const SizedBox(height: 8),
-                IconButton(
-                  icon: const Icon(Icons.more_vert),
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (_) => SafeArea(
-                        child: Wrap(
-                          children: [
-                            ListTile(leading: const Icon(Icons.receipt), title: const Text('View Invoice'), onTap: () => Navigator.pop(context)),
-                            ListTile(leading: const Icon(Icons.refresh), title: const Text('Reorder'), onTap: () => Navigator.pop(context)),
-                            ListTile(leading: const Icon(Icons.help_outline), title: const Text('Help'), onTap: () => Navigator.pop(context)),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                const SizedBox(height: 6),
+                IconButton(icon: const Icon(Icons.more_vert), onPressed: () {}),
               ],
             ),
           ],
@@ -267,9 +233,115 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
 
   String _monthShort(int m) {
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    if (m >=1 && m <=12) return months[m-1];
-    return '';
+    return (m >= 1 && m <= 12) ? months[m - 1] : '';
   }
+
+  // -----------------------------
+  // Animated segmented control
+  // driven by TabController.animation to avoid double-tap
+  // -----------------------------
+
+  Widget _animatedSegmentedControl() {
+    return LayoutBuilder(builder: (context, constraints) {
+      final totalWidth = constraints.maxWidth;
+      final gap = 8.0; // outer padding inside container (left+right total we subtract)
+      final pillWidth = (totalWidth - gap) / 2;
+
+      return Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: SizedBox(
+          height: 46,
+          child: Stack(
+            alignment: Alignment.centerLeft,
+            children: [
+              // Animated pill driven by TabController.animation
+              AnimatedBuilder(
+                animation: _tabController.animation!,
+                builder: (context, child) {
+                  // animation value will go 0.0 -> 1.0 (tab 0 -> tab 1)
+                  final animValue = (_tabController.animation?.value ?? _tabController.index.toDouble()).clamp(0.0, 1.0);
+                  final left = animValue * pillWidth;
+                  return Transform.translate(
+                    offset: Offset(left, 0),
+                    child: child,
+                  );
+                },
+                child: Container(
+                  width: pillWidth,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 6, offset: const Offset(0, 2)),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Two tappable tabs
+              Row(
+                children: [
+                  _animatedTab(label: 'Ongoing', index: 0),
+                  _animatedTab(label: 'Completed', index: 1),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _animatedTab({required String label, required int index}) {
+    // Use AnimatedBuilder to read animation value and compute selection factor
+    return Expanded(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          // animateTo will start the controller animation immediately
+          _tabController.animateTo(index, duration: const Duration(milliseconds: 320), curve: Curves.easeOutBack);
+        },
+        child: SizedBox(
+          height: 46,
+          child: Center(
+            child: AnimatedBuilder(
+              animation: _tabController.animation!,
+              builder: (context, _) {
+                final val = (_tabController.animation?.value ?? _tabController.index.toDouble()).clamp(0.0, 1.0);
+                // when index == 0: selectedFactor = 1 - val; when index == 1: selectedFactor = val
+                final double selectedFactor = index == 0 ? (1.0 - val) : val;
+                final double scale = 1.0 + 0.08 * selectedFactor; // scale up when selected
+                final double opacity = 0.6 + 0.4 * selectedFactor; // fade
+                final Color textColor = selectedFactor > 0.5 ? AppColors.primary : AppColors.textSecondary;
+
+                final TextStyle style = selectedFactor > 0.5
+                    ? _h3().copyWith(color: textColor)
+                    : _body().copyWith(color: textColor);
+
+                return Transform.scale(
+                  scale: scale,
+                  alignment: Alignment.center,
+                  child: Opacity(
+                    opacity: opacity,
+                    child: Text(label, style: style),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // -----------------------------
+  // List builder
+  // -----------------------------
 
   Widget _listFor(List<OrderModel> list, {required bool ongoing}) {
     if (list.isEmpty) {
@@ -285,10 +357,7 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
       padding: EdgeInsets.zero,
       itemCount: list.length,
       physics: const BouncingScrollPhysics(),
-      itemBuilder: (context, i) {
-        final o = list[i];
-        return _orderCard(o, ongoing: ongoing);
-      },
+      itemBuilder: (context, i) => _orderCard(list[i], ongoing: ongoing),
     );
   }
 
@@ -316,47 +385,31 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
           child: Column(
             children: [
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(color: AppColors.bg, borderRadius: BorderRadius.circular(12)),
-                child: TabBar(
-                  controller: _tabController,
-                  labelColor: AppColors.textPrimary ?? Colors.black,
-                  unselectedLabelColor: Colors.grey,
-                  indicator: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 6, offset: const Offset(0, 3))],
-                  ),
-                  tabs: const [
-                    Tab(text: 'Ongoing'),
-                    Tab(text: 'Completed'),
-                  ],
-                ),
-              ),
+              // Animated pill segmented control
+              _animatedSegmentedControl(),
               const SizedBox(height: AppSpacing.md),
+
+              // Tab content
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
+                  physics: const BouncingScrollPhysics(),
                   children: [
+                    // Ongoing
                     ValueListenableBuilder<List<OrderModel>>(
                       valueListenable: OrderManager.instance.orders,
                       builder: (context, orders, _) {
-                        final ongoing = orders.where((o) => !(o.isCompleted) && o.status != OrderStatus.cancelled).toList();
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: _listFor(ongoing, ongoing: true),
-                        );
+                        final ongoing = orders.where((o) => !o.isCompleted && o.status != OrderStatus.cancelled).toList();
+                        return _listFor(ongoing, ongoing: true);
                       },
                     ),
+
+                    // Completed
                     ValueListenableBuilder<List<OrderModel>>(
                       valueListenable: OrderManager.instance.orders,
                       builder: (context, orders, _) {
                         final completed = orders.where((o) => o.isCompleted).toList();
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: _listFor(completed, ongoing: false),
-                        );
+                        return _listFor(completed, ongoing: false);
                       },
                     ),
                   ],

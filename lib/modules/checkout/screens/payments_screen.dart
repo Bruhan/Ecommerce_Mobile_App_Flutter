@@ -117,30 +117,44 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
       // CartManager.instance.clear();
 
       if (!mounted) return;
-      await showDialog(
+
+      // --- SAFE DIALOG PATTERN: dialog returns a result, then we navigate AFTER it is dismissed ---
+      final String? dialogResult = await showDialog<String>(
         context: context,
         barrierDismissible: false,
-        builder: (_) => AlertDialog(
-          title: const Text('Order placed'),
-          content: const Text('Your order has been placed successfully.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushNamed(Routes.orders, arguments: {'openTrack': true, 'orderId': newOrderId});
-              },
-              child: const Text('Track Order'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushNamed(Routes.orders);
-              },
-              child: const Text('My Orders'),
-            ),
-          ],
-        ),
+        builder: (dialogContext) {
+          // Use dialogContext exclusively inside here
+          return AlertDialog(
+            title: const Text('Order placed'),
+            content: const Text('Your order has been placed successfully.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  // pop with result 'track'
+                  Navigator.of(dialogContext).pop('track');
+                },
+                child: const Text('Track Order'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop('orders');
+                },
+                child: const Text('My Orders'),
+              ),
+            ],
+          );
+        },
       );
+
+      // showDialog completed and dialog route has been removed from navigator.
+      // Now navigate based on dialogResult using the screen context (safe).
+      if (!mounted) return;
+      if (dialogResult == 'track') {
+        // Navigate to orders screen and open track for the created order
+        Navigator.of(context).pushNamed(Routes.orders, arguments: {'openTrack': true, 'orderId': newOrderId});
+      } else if (dialogResult == 'orders') {
+        Navigator.of(context).pushNamed(Routes.orders);
+      }
     } catch (e, st) {
       debugPrint('PaymentsScreen: payment error: $e\n$st');
       if (mounted) {

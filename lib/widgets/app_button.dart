@@ -1,3 +1,4 @@
+// lib/widgets/app_button.dart
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
 
@@ -21,12 +22,12 @@ class AppButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: loading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
+          backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadii.md.toDouble()),
           ),
-          textStyle: AppTextStyles.body.copyWith(fontWeight: FontWeight.bold),
+          textStyle: AppTextStyles.body?.copyWith(fontWeight: FontWeight.bold),
           elevation: 0,
         ),
         child: loading

@@ -1,19 +1,19 @@
-// lib/widgets/filter_sheet.dart
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
 
-/// FilterSheet
-///
-/// A bookstore-focused filter bottom sheet that returns a Map<String,dynamic>
-/// of selected filters when the user taps "Apply Filters".
-///
 /// Returned map keys:
 /// - sort: String
 /// - priceRange: [min, max] (ints)
+/// - priceBuckets: List<int> (selected bucket indices)
 /// - formats: List<String>
 /// - genres: List<String>
-/// - author: String
+/// - categories: List<String>
+/// - subCategories: List<String>
+/// - authors: List<String>
+/// - author: String (text search)
 /// - languages: List<String>
+/// - academic: List<String>
+/// - merchandise: List<String>
 /// - rating: String  (e.g. '4★ & up')
 class FilterSheet extends StatefulWidget {
   const FilterSheet({Key? key}) : super(key: key);
@@ -29,14 +29,25 @@ class _FilterSheetState extends State<FilterSheet> {
 
   // Price range
   double _priceMin = 0;
-  double _priceMax = 2000;
+  double _priceMax = 3000;
   RangeValues _selectedRange = const RangeValues(0, 2000);
+
+  
+  final List<Map<String, dynamic>> _priceBuckets = [
+    {'label': 'Rs. 0 - Rs. 100', 'start': 0, 'end': 100},
+    {'label': 'Rs. 101 - Rs. 200', 'start': 101, 'end': 200},
+    {'label': 'Rs. 201 - Rs. 400', 'start': 201, 'end': 400},
+    {'label': 'Rs. 401 - Rs. 1000', 'start': 401, 'end': 1000},
+    {'label': 'Rs. 1001 - Rs. 3000', 'start': 1001, 'end': 3000},
+    {'label': 'Rs. 3000 above', 'start': 3001, 'end': 999999},
+  ];
+  final Set<int> _selectedPriceBuckets = {};
 
   // Formats
   final List<String> _formats = ['Paperback', 'Hardcover', 'eBook', 'Audiobook'];
   final Set<String> _selectedFormats = {};
 
-  // Genres (example list - replace with your categories if needed)
+  // Genres (example list)
   final List<String> _genres = [
     'Programming',
     'Fiction',
@@ -45,21 +56,44 @@ class _FilterSheetState extends State<FilterSheet> {
     'Science',
     'Education',
     'Technology',
-    'Academic',
-    'Reference'
+    'Exam Prep',
+    'Design',
   ];
   final Set<String> _selectedGenres = {};
 
-  // Author text
+  // Categories + sub-categories (from screenshots)
+  final List<String> _categories = ['Fantasy', 'Fiction', 'Mythology', 'Art', 'Si-Fi'];
+  final Set<String> _selectedCategories = {};
+
+  final List<String> _subCategories = ['Epic', 'Historical', 'Literary', 'Greek', 'Norse', 'Contemporary', 'CyberPunk'];
+  final Set<String> _selectedSubCategories = {};
+
+  // Author list from image
+  final List<String> _authors = ['Sarah Johnson', 'J. K. Rowling', 'Chetan Bagath', 'Emma Smith'];
+  final Set<String> _selectedAuthors = {};
+
+  // Author text input (search)
   final TextEditingController _authorController = TextEditingController();
 
   // Languages
-  final List<String> _languages = ['English', 'Tamil', 'Hindi', 'Telugu', 'Kannada'];
+  final List<String> _languages = ['English', 'French', 'Germany', 'Hindi', 'Tamil'];
   final Set<String> _selectedLanguages = {};
+
+  // Academic (subjects)
+  final List<String> _academic = ['Chemistry', 'Physics', 'Mathematics', 'Biology', 'Electrical'];
+  final Set<String> _selectedAcademic = {};
+
+  // Merchandise
+  final List<String> _merchandise = ['Bookmark', 'Poster'];
+  final Set<String> _selectedMerchandise = {};
 
   // Rating
   final List<String> _ratingLabels = ['4★ & up', '3★ & up', '2★ & up', 'Any'];
   String _selectedRating = 'Any';
+
+  // show more flags
+  bool _showMoreCategories = false;
+  bool _showMoreSubCategories = false;
 
   @override
   void dispose() {
@@ -71,11 +105,19 @@ class _FilterSheetState extends State<FilterSheet> {
     setState(() {
       _selectedSort = 'Relevance';
       _selectedRange = RangeValues(_priceMin, _priceMax);
+      _selectedPriceBuckets.clear();
       _selectedFormats.clear();
       _selectedGenres.clear();
+      _selectedCategories.clear();
+      _selectedSubCategories.clear();
+      _selectedAuthors.clear();
       _authorController.clear();
       _selectedLanguages.clear();
+      _selectedAcademic.clear();
+      _selectedMerchandise.clear();
       _selectedRating = 'Any';
+      _showMoreCategories = false;
+      _showMoreSubCategories = false;
     });
   }
 
@@ -83,20 +125,25 @@ class _FilterSheetState extends State<FilterSheet> {
     final Map<String, dynamic> filters = {
       'sort': _selectedSort,
       'priceRange': [_selectedRange.start.toInt(), _selectedRange.end.toInt()],
+      'priceBuckets': _selectedPriceBuckets.toList(),
       'formats': _selectedFormats.toList(),
       'genres': _selectedGenres.toList(),
+      'categories': _selectedCategories.toList(),
+      'subCategories': _selectedSubCategories.toList(),
+      'authors': _selectedAuthors.toList(),
       'author': _authorController.text.trim(),
       'languages': _selectedLanguages.toList(),
+      'academic': _selectedAcademic.toList(),
+      'merchandise': _selectedMerchandise.toList(),
       'rating': _selectedRating,
     };
     Navigator.of(context).pop(filters);
   }
 
   // theme-safe getters
-  Color get _bg => AppColors.surface ?? Colors.white ;
-  // Color get _bg => AppColors.surface ?? Colors.white;
+  Color get _bg => AppColors.bg ?? Colors.white;
   Color get _card => AppColors.surface ?? Colors.grey.shade50;
-  Color get _primary => AppColors.primary ?? Colors.black;
+  Color get _primary => AppColors.primary ?? const Color(0xFF326638);
   Color get _border => AppColors.fieldBorder ?? Colors.grey.shade300;
   TextStyle get _titleStyle => AppTextStyles.h2?.copyWith(fontSize: 18) ?? const TextStyle(fontSize: 18, fontWeight: FontWeight.w700);
   TextStyle get _bodyStyle => AppTextStyles.body ?? const TextStyle(fontSize: 14);
@@ -122,9 +169,51 @@ class _FilterSheetState extends State<FilterSheet> {
     );
   }
 
+  Widget _priceBucketRow(int index) {
+    final label = _priceBuckets[index]['label'].toString();
+    final selected = _selectedPriceBuckets.contains(index);
+    return InkWell(
+      onTap: () {
+        setState(() {
+          if (selected) _selectedPriceBuckets.remove(index);
+          else _selectedPriceBuckets.add(index);
+          // sync the range to the bucket (useful UX)
+          final bucket = _priceBuckets[index];
+          _selectedRange = RangeValues((bucket['start'] as num).toDouble(), (bucket['end'] as num).toDouble());
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        decoration: BoxDecoration(
+          color: selected ? _primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: selected ? _primary : _border),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                color: selected ? Colors.white : Colors.transparent,
+                border: Border.all(color: selected ? Colors.white : _border),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: selected ? const Icon(Icons.check, size: 16, color: Colors.black) : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(child: Text(label, style: selected ? _bodyStyle.copyWith(color: Colors.white) : _bodyStyle)),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Ensure the sheet is large enough and scrollable
+    final double maxPriceValue = _priceMax;
+
     return SafeArea(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -168,59 +257,102 @@ class _FilterSheetState extends State<FilterSheet> {
                         ),
                         const SizedBox(height: AppSpacing.lg),
 
-                        // Price
+                        // Price buckets
                         _sectionTitle('Price'),
-                        RangeSlider(
-                          values: _selectedRange,
-                          min: _priceMin,
-                          max: _priceMax,
-                          divisions: 20,
-                          labels: RangeLabels('₹${_selectedRange.start.toInt()}', '₹${_selectedRange.end.toInt()}'),
-                          onChanged: (rv) => setState(() => _selectedRange = rv),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2),
+                          child: Column(
+                            children: List.generate(_priceBuckets.length, (i) => _priceBucketRow(i)),
+                          ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('₹${_selectedRange.start.toInt()}', style: _captionStyle),
-                            Text('₹${_selectedRange.end.toInt()}', style: _captionStyle),
-                          ],
+                        const SizedBox(height: AppSpacing.sm),
+
+                        // Range slider
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              RangeSlider(
+                                values: _selectedRange,
+                                min: _priceMin,
+                                max: maxPriceValue,
+                                divisions: 30,
+                                labels: RangeLabels('₹${_selectedRange.start.toInt()}', '₹${_selectedRange.end.toInt()}'),
+                                onChanged: (rv) => setState(() {
+                                  _selectedRange = rv;
+                                  // clear bucket selection when custom range chosen
+                                  _selectedPriceBuckets.clear();
+                                }),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('₹${_selectedRange.start.toInt()}', style: _captionStyle),
+                                  Text('₹${_selectedRange.end.toInt()}', style: _captionStyle),
+                                ],
+                              )
+                            ],
+                          ),
                         ),
                         const SizedBox(height: AppSpacing.lg),
 
-                        // Format
-                        _sectionTitle('Format'),
-                        Wrap(
-                          spacing: 10,
-                          children: _formats.map((f) {
-                            final sel = _selectedFormats.contains(f);
-                            return _chip(f, selected: sel, onTap: () {
-                              setState(() {
-                                if (sel) _selectedFormats.remove(f);
-                                else _selectedFormats.add(f);
-                              });
-                            });
-                          }).toList(),
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-
-                        // Genres
-                        _sectionTitle('Genres'),
+                        // Category
+                        _sectionTitle('Category'),
                         Wrap(
                           spacing: 8,
                           runSpacing: 8,
-                          children: _genres.map((g) {
-                            final sel = _selectedGenres.contains(g);
-                            return _chip(g, selected: sel, onTap: () {
+                          children: _categories.map((c) {
+                            final sel = _selectedCategories.contains(c);
+                            return _chip(c, selected: sel, onTap: () {
                               setState(() {
-                                if (sel) _selectedGenres.remove(g);
-                                else _selectedGenres.add(g);
+                                if (sel) _selectedCategories.remove(c);
+                                else _selectedCategories.add(c);
                               });
                             });
                           }).toList(),
                         ),
+                        const SizedBox(height: AppSpacing.sm),
+
+                        // Sub Category with "show more"
+                        _sectionTitle('Sub Category'),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ..._subCategories.asMap().entries.take(_showMoreSubCategories ? _subCategories.length : 4).map((e) {
+                              final label = e.value;
+                              final sel = _selectedSubCategories.contains(label);
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 6),
+                                child: Row(
+                                  children: [
+                                    Checkbox(
+                                      value: sel,
+                                      onChanged: (_) => setState(() {
+                                        if (sel) _selectedSubCategories.remove(label);
+                                        else _selectedSubCategories.add(label);
+                                      }),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Expanded(child: Text(label, style: _bodyStyle)),
+                                  ],
+                                ),
+                              );
+                            }),
+                            if (_subCategories.length > 4)
+                              GestureDetector(
+                                onTap: () => setState(() => _showMoreSubCategories = !_showMoreSubCategories),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 6),
+                                  child: Text(_showMoreSubCategories ? 'Show less' : 'Show more', style: _captionStyle.copyWith(color: _primary)),
+                                ),
+                              ),
+                          ],
+                        ),
+
                         const SizedBox(height: AppSpacing.lg),
 
-                        // Author
+                        // Author (checkbox list) + search field
                         _sectionTitle('Author'),
                         TextField(
                           controller: _authorController,
@@ -234,12 +366,36 @@ class _FilterSheetState extends State<FilterSheet> {
                           ),
                           onSubmitted: (_) => setState(() {}),
                         ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Column(
+                          children: _authors.map((a) {
+                            final sel = _selectedAuthors.contains(a);
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 6),
+                              child: Row(
+                                children: [
+                                  Checkbox(
+                                    value: sel,
+                                    onChanged: (_) => setState(() {
+                                      if (sel) _selectedAuthors.remove(a);
+                                      else _selectedAuthors.add(a);
+                                    }),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(child: Text(a, style: _bodyStyle)),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+
                         const SizedBox(height: AppSpacing.lg),
 
-                        // Languages
+                        // Language
                         _sectionTitle('Language'),
                         Wrap(
                           spacing: 8,
+                          runSpacing: 8,
                           children: _languages.map((l) {
                             final sel = _selectedLanguages.contains(l);
                             return _chip(l, selected: sel, onTap: () {
@@ -250,6 +406,76 @@ class _FilterSheetState extends State<FilterSheet> {
                             });
                           }).toList(),
                         ),
+
+                        const SizedBox(height: AppSpacing.lg),
+
+                        // Academic (checkboxes)
+                        _sectionTitle('Academic'),
+                        Column(
+                          children: _academic.map((s) {
+                            final sel = _selectedAcademic.contains(s);
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 6),
+                              child: Row(
+                                children: [
+                                  Checkbox(
+                                    value: sel,
+                                    onChanged: (_) => setState(() {
+                                      if (sel) _selectedAcademic.remove(s);
+                                      else _selectedAcademic.add(s);
+                                    }),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(child: Text(s, style: _bodyStyle)),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+
+                        const SizedBox(height: AppSpacing.lg),
+
+                        // Merchandise
+                        _sectionTitle('Merchandise'),
+                        Column(
+                          children: _merchandise.map((m) {
+                            final sel = _selectedMerchandise.contains(m);
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 6),
+                              child: Row(
+                                children: [
+                                  Checkbox(
+                                    value: sel,
+                                    onChanged: (_) => setState(() {
+                                      if (sel) _selectedMerchandise.remove(m);
+                                      else _selectedMerchandise.add(m);
+                                    }),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(child: Text(m, style: _bodyStyle)),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+
+                        const SizedBox(height: AppSpacing.lg),
+
+                        // Format chips
+                        _sectionTitle('Format'),
+                        Wrap(
+                          spacing: 10,
+                          children: _formats.map((f) {
+                            final sel = _selectedFormats.contains(f);
+                            return _chip(f, selected: sel, onTap: () {
+                              setState(() {
+                                if (sel) _selectedFormats.remove(f);
+                                else _selectedFormats.add(f);
+                              });
+                            });
+                          }).toList(),
+                        ),
+
                         const SizedBox(height: AppSpacing.lg),
 
                         // Rating
@@ -261,6 +487,7 @@ class _FilterSheetState extends State<FilterSheet> {
                             return _chip(r, selected: sel, onTap: () => setState(() => _selectedRating = r));
                           }).toList(),
                         ),
+
                         const SizedBox(height: AppSpacing.xl),
                       ],
                     ),

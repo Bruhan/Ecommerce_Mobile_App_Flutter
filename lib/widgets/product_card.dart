@@ -23,22 +23,18 @@ class ProductCard extends StatelessWidget {
     this.badge,
   });
 
-  Widget _buildStars(double r, {double size = 12}) {
+  Widget _buildStars(double r) {
     final full = r.floor();
-    final half = (r - full) >= 0.5;
+    final half = (r - full) >= 0.5 ? 1 : 0;
+    final empty = 5 - full - half;
 
     return Row(
-      children: List.generate(5, (i) {
-        IconData icon;
-        if (i < full) {
-          icon = Icons.star;
-        } else if (i == full && half) {
-          icon = Icons.star_half;
-        } else {
-          icon = Icons.star_border;
-        }
-        return Icon(icon, size: size, color: Colors.amber.shade700);
-      }),
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ...List.generate(full, (_) => const Icon(Icons.star, size: 14, color: Colors.amber)),
+        if (half == 1) const Icon(Icons.star_half, size: 14, color: Colors.amber),
+        ...List.generate(empty, (_) => const Icon(Icons.star_border, size: 14, color: Colors.amber)),
+      ],
     );
   }
 
@@ -51,169 +47,172 @@ class ProductCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppRadii.lg),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // IMAGE AREA
-          AspectRatio(
-            aspectRatio: 1,
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppRadii.lg),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(AppRadii.lg),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 4,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// IMAGE SECTION (fixed aspect ratio)
+            Expanded(
+              flex: 5,
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(AppRadii.md),
                     child: Image.network(
                       imageUrl,
+                      width: double.infinity,
+                      height: double.infinity,
                       fit: BoxFit.cover,
-                      loadingBuilder: (ctx, child, progress) {
-                        if (progress == null) return child;
-                        return Container(
-                          color: AppColors.bg,
-                          child: const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        );
-                      },
                       errorBuilder: (_, __, ___) => Container(
                         color: AppColors.bg,
                         alignment: Alignment.center,
-                        child: const Icon(Icons.menu_book_rounded, size: 32),
+                        child: Icon(Icons.menu_book_rounded, size: 40, color: AppColors.textSecondary),
                       ),
                     ),
                   ),
-                ),
 
-                // BADGE
-                if (showBadge)
+                  /// BADGE
+                  if (showBadge)
+                    Positioned(
+                      left: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.85),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          badge!,
+                          style: AppTextStyles.caption?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 11,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  /// FAVORITE BUTTON
                   Positioned(
-                    left: 8,
+                    right: 8,
                     top: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 6),
+                      padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: badge!.toLowerCase().contains('sale')
-                              ? [Colors.red.shade400, Colors.red.shade700]
-                              : badge!.toLowerCase().contains('new')
-                                  ? [Colors.blue.shade400, Colors.blue.shade700]
-                                  : [
-                                      Colors.orange.shade400,
-                                      Colors.orange.shade700
-                                    ],
-                        ),
-                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.white,
+                        shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 6,
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
                         ],
                       ),
-                      child: Text(
-                        badge!,
-                        style: AppTextStyles.caption?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                        ),
+                      child: Icon(
+                        Icons.favorite_border,
+                        size: 18,
+                        color: AppColors.textPrimary.withOpacity(0.8),
                       ),
                     ),
                   ),
-
-                // FAVORITE ICON
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x11000000),
-                          blurRadius: 8,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(6),
-                      child: Icon(Icons.favorite_border_rounded, size: 18),
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
 
-          const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: 12),
 
-          // CONTENT SECTION — MAKE FLEXIBLE TO AVOID OVERFLOW
-          Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // TITLE
-                Text(
-                  title,
-                  style: AppTextStyles.body,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+            /// TITLE
+            Text(
+              title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.body.copyWith(
+                fontWeight: FontWeight.w700,
+                height: 1.3,
+              ),
+            ),
+
+            /// AUTHOR
+            if (hasAuthor) ...[
+              const SizedBox(height: 4),
+              Text(
+                author!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.caption?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
                 ),
+              ),
+            ],
 
-                // AUTHOR
-                if (hasAuthor) ...[
-                  const SizedBox(height: 2),
+            /// RATING
+            if (hasRating) ...[
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  _buildStars(rating!),
+                  const SizedBox(width: 6),
                   Text(
-                    author!,
+                    rating!.toStringAsFixed(1),
                     style: AppTextStyles.caption?.copyWith(
+                      fontWeight: FontWeight.w600,
                       color: AppColors.textSecondary,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
+              ),
+            ],
 
-                // RATING
-                if (hasRating) ...[
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      _buildStars(rating ?? 0.0, size: 12),
-                      const SizedBox(width: 6),
-                      Text(
-                        (rating ?? 0.0).toStringAsFixed(1),
-                        style: AppTextStyles.caption,
-                      ),
-                    ],
+            const Spacer(), // Pushes price to the bottom
+
+            /// PRICE ROW
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '₹$price',
+                  style: AppTextStyles.body.copyWith(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 18,
+                    color: AppColors.textPrimary,
                   ),
-                ],
-
-                const SizedBox(height: 6),
-
-                // PRICE + DISCOUNT
-                Row(
-                  children: [
-                    Text(
-                      '₹ $price',
-                      style: AppTextStyles.body,
-                    ),
-                    if (discount != null) ...[
-                      const SizedBox(width: 8),
-                      Text(
-                        '-${(discount! * 100).toStringAsFixed(0)}%',
-                        style: AppTextStyles.caption?.copyWith(
-                          color: AppColors.danger,
-                        ),
-                      ),
-                    ],
-                  ],
                 ),
+                if (discount != null) ...[
+                  const SizedBox(width: 8),
+                  Text(
+                    '-${(discount! * 100).round()}%',
+                    style: AppTextStyles.caption?.copyWith(
+                      color: Colors.green.shade600,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
