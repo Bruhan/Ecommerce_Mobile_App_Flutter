@@ -29,7 +29,7 @@ class AppButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadii.md.toDouble()),
           ),
-          textStyle: AppTextStyles.body.copyWith(fontWeight: FontWeight.bold),
+          textStyle: AppTextStyles.body?.copyWith(fontWeight: FontWeight.bold),
           elevation: 0,
         ),
         child: loading

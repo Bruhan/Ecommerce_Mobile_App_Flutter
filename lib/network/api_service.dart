@@ -38,6 +38,7 @@ class ApiService {
       final headers = await getHeaders();
       final response = await http.get(uri, headers: headers);
       return _processResponse(response);
+
     }
     catch (e, stackTrace) {
       throw Error.throwWithStackTrace(Exception('Error fetching data: $e'), stackTrace);
@@ -45,19 +46,19 @@ class ApiService {
   }
 
   Future<dynamic> post(String endpoint, String body) async {
+
     final baseUrl = await getApiLink();
     final uri = Uri.parse('$baseUrl$endpoint');
-    print(uri);
     try {
       final headers = await getHeaders();
       final response = await http.post(
           uri, headers: headers, body: body);
-      print(response.body);
       return _processResponse(response);
     } catch (e) {
       throw Exception('Error posting data: $e');
     }
   }
+
 
   Future<dynamic> multipartPost(String endpoint, Map<String, dynamic> fields, Map<String, File>? files) async {
     final baseUrl = await getApiLink();
@@ -72,6 +73,7 @@ class ApiService {
         for (final entry in files.entries) {
           final fieldName = entry.key;
           final file = entry.value;
+
           request.files.add(await http.MultipartFile.fromPath(fieldName, file.path));
         }
       }
@@ -83,12 +85,14 @@ class ApiService {
       var response = await request.send();
       return response;
 
+
     } catch(e) {
       throw Exception('Error posting data: $e');
     }
   }
 
   Future<dynamic> put(String endpoint, String body) async {
+
     final baseUrl = await getApiLink();
     final uri = Uri.parse('$baseUrl$endpoint');
     try {
@@ -101,6 +105,7 @@ class ApiService {
     }
   }
 
+
   Future<dynamic> multipartPut(String endpoint, Map<String, dynamic> body, List<dynamic> files) async {
     final baseUrl = await getApiLink();
     final uri = Uri.parse('$baseUrl$endpoint');
@@ -110,7 +115,6 @@ class ApiService {
         request.fields[key] = value;
       });
       request.headers.addAll(await getHeaders());
-
 
       //want to add images as files
 
@@ -123,6 +127,7 @@ class ApiService {
   }
 
   Future<dynamic> delete(String endpoint) async {
+
     final baseUrl = await getApiLink();
     final uri = Uri.parse('$baseUrl$endpoint');
     try {

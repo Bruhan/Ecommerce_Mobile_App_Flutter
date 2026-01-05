@@ -69,6 +69,7 @@ class ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             /// IMAGE SECTION (fixed aspect ratio)
             Expanded(
               flex: 5,
@@ -84,6 +85,7 @@ class ProductCard extends StatelessWidget {
                       errorBuilder: (_, __, ___) => Container(
                         color: AppColors.bg,
                         alignment: Alignment.center,
+
                         child: Icon(Icons.menu_book_rounded, size: 40, color: AppColors.textSecondary),
                       ),
                     ),
@@ -140,6 +142,7 @@ class ProductCard extends StatelessWidget {
               ),
             ),
 
+
             const SizedBox(height: 12),
 
             /// TITLE
@@ -163,6 +166,7 @@ class ProductCard extends StatelessWidget {
                 style: AppTextStyles.caption?.copyWith(
                   color: AppColors.textSecondary,
                   fontWeight: FontWeight.w500,
+
                 ),
               ),
             ],
@@ -184,6 +188,7 @@ class ProductCard extends StatelessWidget {
                 ],
               ),
             ],
+
 
             const Spacer(), // Pushes price to the bottom
 

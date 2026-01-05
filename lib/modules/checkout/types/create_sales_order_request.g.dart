@@ -15,7 +15,7 @@ CreateSalesOrderRequest _$CreateSalesOrderRequestFromJson(
       rzpOrderId: json['rzpOrderId'] as String?,
       rzpStatus: json['rzpStatus'] as String?,
       shippingAddressId: (json['shippingAddressId'] as num?)?.toInt(),
-      isShippingSameAsBilling: json['isShippingSameAsBilling'] as bool?,
+  isShippingSameAsBilling: (json['isShippingSameAsBilling'] as bool?),
       itemList: (json['itemList'] as List<dynamic>?)
           ?.map((e) => ItemList.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -37,7 +37,7 @@ Map<String, dynamic> _$CreateSalesOrderRequestToJson(
       'rzpOrderId': instance.rzpOrderId,
       'rzpStatus': instance.rzpStatus,
       'shippingAddressId': instance.shippingAddressId,
-      'isShippingSameAsBilling': instance.isShippingSameAsBilling,
+    'isShippingSameAsBilling': instance.isShippingSameAsBilling,
       'itemList': instance.itemList,
       'remarks': instance.remarks,
       'batch': instance.batch,

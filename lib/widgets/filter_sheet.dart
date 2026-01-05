@@ -25,6 +25,7 @@ class FilterSheet extends StatefulWidget {
 }
 
 class _FilterSheetState extends State<FilterSheet> {
+
   // Sort options
   final List<String> _sortOptions = ['Relevance', 'Price: Low - High', 'Price: High - Low', 'Newest', 'Top Rated'];
   String _selectedSort = 'Relevance';
@@ -34,7 +35,6 @@ class _FilterSheetState extends State<FilterSheet> {
   double _priceMax = 3000;
   RangeValues _selectedRange = const RangeValues(0, 2000);
 
-  
   final List<Map<String, dynamic>> _priceBuckets = [
     {'label': 'Rs. 0 - Rs. 100', 'start': 0, 'end': 100},
     {'label': 'Rs. 101 - Rs. 200', 'start': 101, 'end': 200},
@@ -44,6 +44,7 @@ class _FilterSheetState extends State<FilterSheet> {
     {'label': 'Rs. 3000 above', 'start': 3001, 'end': 999999},
   ];
   final Set<int> _selectedPriceBuckets = {};
+
 
   // Formats
   final List<String> _formats = ['Paperback', 'Hardcover', 'eBook', 'Audiobook'];
@@ -147,7 +148,7 @@ class _FilterSheetState extends State<FilterSheet> {
   Color get _card => AppColors.surface ?? Colors.grey.shade50;
   Color get _primary => AppColors.primary ?? const Color(0xFF326638);
   Color get _border => AppColors.fieldBorder ?? Colors.grey.shade300;
-  TextStyle get _titleStyle => AppTextStyles.h2.copyWith(fontSize: 18) ?? const TextStyle(fontSize: 18, fontWeight: FontWeight.w700);
+  TextStyle get _titleStyle => AppTextStyles.h2?.copyWith(fontSize: 18) ?? const TextStyle(fontSize: 18, fontWeight: FontWeight.w700);
   TextStyle get _bodyStyle => AppTextStyles.body ?? const TextStyle(fontSize: 14);
   TextStyle get _captionStyle => AppTextStyles.caption ?? const TextStyle(fontSize: 12, color: Colors.grey);
 
@@ -214,6 +215,7 @@ class _FilterSheetState extends State<FilterSheet> {
 
   @override
   Widget build(BuildContext context) {
+
     final double maxPriceValue = _priceMax;
 
     return SafeArea(

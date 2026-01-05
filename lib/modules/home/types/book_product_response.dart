@@ -9,8 +9,7 @@ class BookProductResponse {
 
   const BookProductResponse({
     this.products,
-    this.totalProducts,k
-
+    this.totalProducts,
   });
 
   factory BookProductResponse.fromJson(Map<String, dynamic> json) =>

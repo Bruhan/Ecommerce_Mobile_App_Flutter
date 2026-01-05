@@ -23,7 +23,7 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
 
   // Safe style getters
   TextStyle _h2() => AppTextStyles.h2 ?? const TextStyle(fontSize: 18, fontWeight: FontWeight.w700);
-  TextStyle _h3() => AppTextStyles.body?.copyWith(fontSize: 16, fontWeight: FontWeight.w700)
+  TextStyle _h3() => AppTextStyles.body.copyWith(fontSize: 16, fontWeight: FontWeight.w700)
       ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.w700);
   TextStyle _body() => AppTextStyles.body ?? const TextStyle(fontSize: 14);
   TextStyle _caption() => AppTextStyles.caption ?? const TextStyle(fontSize: 12, color: Colors.grey);

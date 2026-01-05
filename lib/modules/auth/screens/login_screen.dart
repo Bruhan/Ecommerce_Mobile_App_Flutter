@@ -59,8 +59,6 @@ class _LoginScreenState extends State<LoginScreen> {
         'loginType': "user"
       };
 
-      print(reqBody);
-
       final res =
           await _apiService.post(AuthApiRoutes.loginWithPassword, json.encode(reqBody));
 

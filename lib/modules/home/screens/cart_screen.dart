@@ -107,7 +107,7 @@ class _CartScreenState extends State<CartScreen> {
                     onPressed: () {
                       Navigator.pushNamed(context, Routes.checkout); // if exists
                     },
-                    child:  Padding(
+                    child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

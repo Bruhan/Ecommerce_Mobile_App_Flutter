@@ -39,6 +39,9 @@ class _DiscoverTabState extends State<DiscoverTab> {
 
   Map<String, dynamic>? lastAppliedFilters;
 
+  // Track saved products by their ID
+  final Set<String> _savedProductIds = <String>{};
+
   @override
   void initState() {
     super.initState();
@@ -57,6 +60,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
       final res = await ProductService().getAllProducts(endpoint);
 
       final WebResponse<BookProductResponse> response =
+
           WebResponse.fromJson(res, (data) {
         return BookProductResponse.fromJson(data);
       });
@@ -68,6 +72,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                 'imageUrl': item.imagePath ?? '',
                 'title': item.product?.itemDesc ?? 'No title',
                 'price': (item.product?.ecomUnitPrice ?? 0).toInt(),
+
                 'mrp': (item.product?.mrp ??
                         item.product?.ecomUnitPrice ??
                         0)
@@ -160,18 +165,22 @@ class _DiscoverTabState extends State<DiscoverTab> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(
                 AppSpacing.lg, AppSpacing.xl, AppSpacing.lg, 0),
+
             child: Row(
               children: [
                 Text('Discover', style: AppTextStyles.h1),
                 const Spacer(),
                 IconButton(
                   icon: const Icon(Icons.notifications_none_rounded),
+
                   onPressed: () =>
                       Navigator.pushNamed(context, Routes.notifications),
+
                 ),
                 IconButton(
                   icon: const Icon(Icons.tune_rounded),
                   onPressed: () async {
+
                     final res = await showModalBottomSheet<
                         Map<String, dynamic>>(
                       context: context,
@@ -195,7 +204,6 @@ class _DiscoverTabState extends State<DiscoverTab> {
           ),
         ),
 
-        /// SEARCH
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
@@ -208,7 +216,6 @@ class _DiscoverTabState extends State<DiscoverTab> {
           ),
         ),
 
-        /// CATEGORIES
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.only(left: AppSpacing.lg),
@@ -227,6 +234,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                     selectedColor: Colors.black,
                     backgroundColor: const Color(0xFFF5F5F5),
                     labelStyle: selected
+
                         ? AppTextStyles.body
                             .copyWith(color: Colors.white)
                         : AppTextStyles.body,
@@ -241,7 +249,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
           ),
         ),
 
-        /// GRID
+
         SliverPadding(
           padding: const EdgeInsets.all(AppSpacing.lg),
           sliver: isLoading
@@ -295,6 +303,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                   ),
                 ),
         ),
+
 
         const SliverToBoxAdapter(
           child: SizedBox(height: AppSpacing.xxl),

@@ -125,7 +125,7 @@ class _FilterSheetContentState extends State<_FilterSheetContent> {
   Color get _cardColor => AppColors.surface ?? Colors.grey.shade50;
   Color get _primary => AppColors.primary ?? Colors.black;
   Color get _borderColor => AppColors.fieldBorder ?? Colors.grey.shade300;
-  TextStyle get _titleStyle => AppTextStyles.h2?.copyWith(fontSize: 18) ?? const TextStyle(fontSize: 18, fontWeight: FontWeight.w700);
+  TextStyle get _titleStyle => AppTextStyles.h2.copyWith(fontSize: 18) ?? const TextStyle(fontSize: 18, fontWeight: FontWeight.w700);
   TextStyle get _bodyStyle => AppTextStyles.body ?? const TextStyle(fontSize: 14);
   TextStyle get _captionStyle => AppTextStyles.caption ?? const TextStyle(fontSize: 12, color: Colors.grey);
 
