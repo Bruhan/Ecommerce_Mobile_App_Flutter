@@ -7,6 +7,8 @@ import 'package:ecommerce_mobile/widgets/filter_sheet.dart';
 import 'package:ecommerce_mobile/modules/home/constants/product-api.constant.dart';
 import 'package:ecommerce_mobile/modules/home/types/book_product_response.dart';
 import 'package:ecommerce_mobile/network/product_service.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 import '../../../globals/text_styles.dart';
 import '../../general/types/api.types.dart';
 
@@ -39,13 +41,21 @@ class _DiscoverTabState extends State<DiscoverTab> {
 
   Map<String, dynamic>? lastAppliedFilters;
 
-  // Track saved products by their ID
   final Set<String> _savedProductIds = <String>{};
 
   @override
   void initState() {
     super.initState();
+    _requestNotificationPermission();
     fetchProducts();
+  }
+
+  /// 🔔 ANDROID 13+ NOTIFICATION PERMISSION
+  Future<void> _requestNotificationPermission() async {
+    final status = await Permission.notification.status;
+    if (status.isDenied) {
+      await Permission.notification.request();
+    }
   }
 
   Future<void> fetchProducts({Map<String, dynamic>? filters}) async {
@@ -60,7 +70,6 @@ class _DiscoverTabState extends State<DiscoverTab> {
       final res = await ProductService().getAllProducts(endpoint);
 
       final WebResponse<BookProductResponse> response =
-
           WebResponse.fromJson(res, (data) {
         return BookProductResponse.fromJson(data);
       });
@@ -72,10 +81,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                 'imageUrl': item.imagePath ?? '',
                 'title': item.product?.itemDesc ?? 'No title',
                 'price': (item.product?.ecomUnitPrice ?? 0).toInt(),
-
-                'mrp': (item.product?.mrp ??
-                        item.product?.ecomUnitPrice ??
-                        0)
+                'mrp': (item.product?.mrp ?? item.product?.ecomUnitPrice ?? 0)
                     .toInt(),
                 'description': item.product?.ecomDescription ?? '',
                 'category': (item.product?.category ?? '').toString(),
@@ -104,16 +110,13 @@ class _DiscoverTabState extends State<DiscoverTab> {
     var list = List<Map<String, dynamic>>.from(productsRaw);
     final filters = lastAppliedFilters ?? {};
 
-    // CATEGORY
     if (_selectedCategory != 0) {
       final cat = _categories[_selectedCategory].toLowerCase();
       list = list
-          .where((p) =>
-              (p['category'] ?? '').toString().toLowerCase() == cat)
+          .where((p) => (p['category'] ?? '').toString().toLowerCase() == cat)
           .toList();
     }
 
-    // PRICE
     if (filters['priceRange'] is List) {
       final range = filters['priceRange'];
       list = list.where((p) {
@@ -122,16 +125,14 @@ class _DiscoverTabState extends State<DiscoverTab> {
       }).toList();
     }
 
-    // AUTHOR
     if ((filters['author'] ?? '').toString().isNotEmpty) {
       final q = filters['author'].toString().toLowerCase();
       list = list
-          .where((p) =>
-              (p['author'] ?? '').toString().toLowerCase().contains(q))
+          .where(
+              (p) => (p['author'] ?? '').toString().toLowerCase().contains(q))
           .toList();
     }
 
-    // SORT
     switch (filters['sort']) {
       case 'Price: Low - High':
         list.sort((a, b) => a['price'].compareTo(b['price']));
@@ -160,29 +161,24 @@ class _DiscoverTabState extends State<DiscoverTab> {
 
     return CustomScrollView(
       slivers: [
-        /// HEADER
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(
                 AppSpacing.lg, AppSpacing.xl, AppSpacing.lg, 0),
-
             child: Row(
               children: [
                 Text('Discover', style: AppTextStyles.h1),
                 const Spacer(),
                 IconButton(
                   icon: const Icon(Icons.notifications_none_rounded),
-
                   onPressed: () =>
                       Navigator.pushNamed(context, Routes.notifications),
-
                 ),
                 IconButton(
                   icon: const Icon(Icons.tune_rounded),
                   onPressed: () async {
-
-                    final res = await showModalBottomSheet<
-                        Map<String, dynamic>>(
+                    final res =
+                        await showModalBottomSheet<Map<String, dynamic>>(
                       context: context,
                       isScrollControlled: true,
                       useSafeArea: true,
@@ -203,7 +199,6 @@ class _DiscoverTabState extends State<DiscoverTab> {
             ),
           ),
         ),
-
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
@@ -215,7 +210,6 @@ class _DiscoverTabState extends State<DiscoverTab> {
             ),
           ),
         ),
-
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.only(left: AppSpacing.lg),
@@ -234,9 +228,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                     selectedColor: Colors.black,
                     backgroundColor: const Color(0xFFF5F5F5),
                     labelStyle: selected
-
-                        ? AppTextStyles.body
-                            .copyWith(color: Colors.white)
+                        ? AppTextStyles.body.copyWith(color: Colors.white)
                         : AppTextStyles.body,
                     onSelected: (_) {
                       setState(() => _selectedCategory = i);
@@ -248,17 +240,17 @@ class _DiscoverTabState extends State<DiscoverTab> {
             ),
           ),
         ),
-
-
         SliverPadding(
           padding: const EdgeInsets.all(AppSpacing.lg),
           sliver: isLoading
               ? const SliverToBoxAdapter(
                   child: Center(
-                      child: Padding(
-                  padding: EdgeInsets.all(40),
-                  child: CircularProgressIndicator(),
-                )))
+                    child: Padding(
+                      padding: EdgeInsets.all(40),
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                )
               : SliverGrid(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
@@ -266,8 +258,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
 
                       final price = item['price'] as int;
                       final mrp = item['mrp'] as int;
-                      final discount =
-                          mrp > price ? 1 - price / mrp : null;
+                      final discount = mrp > price ? 1 - price / mrp : null;
 
                       String? badge;
                       if (discount != null && discount >= 0.3) {
@@ -303,8 +294,6 @@ class _DiscoverTabState extends State<DiscoverTab> {
                   ),
                 ),
         ),
-
-
         const SliverToBoxAdapter(
           child: SizedBox(height: AppSpacing.xxl),
         ),

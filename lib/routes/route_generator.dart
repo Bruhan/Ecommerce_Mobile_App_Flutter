@@ -9,24 +9,24 @@ import 'package:ecommerce_mobile/modules/auth/screens/forgot_password_screen.dar
 import 'package:ecommerce_mobile/modules/auth/screens/otp_screen.dart';
 import 'package:ecommerce_mobile/modules/auth/screens/reset_password_screen.dart';
 
-/// Cart / Checkout / Home
-import 'package:ecommerce_mobile/modules/cart/screens/cart_screen.dart';
+/// Home
 import 'package:ecommerce_mobile/modules/home/screens/home_shell.dart';
-import 'package:ecommerce_mobile/modules/home/screens/saved_screen.dart';
-
-/// NEW SEARCH SCREENS
 import 'package:ecommerce_mobile/modules/home/screens/search_suggestions_screen.dart';
 import 'package:ecommerce_mobile/modules/home/screens/search_results_screen.dart';
+import 'package:ecommerce_mobile/modules/home/screens/saved_screen.dart';
+import 'package:ecommerce_mobile/modules/home/screens/addresses_screen.dart';
+import 'package:ecommerce_mobile/modules/home/screens/new_address_screen.dart';
 
 /// Products
 import 'package:ecommerce_mobile/modules/products/screens/product_details_screen.dart';
 import 'package:ecommerce_mobile/modules/products/screens/reviews_screen.dart';
 
-/// Addresses
-import 'package:ecommerce_mobile/modules/home/screens/addresses_screen.dart';
-import 'package:ecommerce_mobile/modules/home/screens/new_address_screen.dart';
+/// Cart / Checkout
+import 'package:ecommerce_mobile/modules/cart/screens/cart_screen.dart';
+import 'package:ecommerce_mobile/modules/checkout/screens/checkout_screen.dart';
+import 'package:ecommerce_mobile/modules/checkout/screens/payments_screen.dart';
 
-/// Payment screens
+/// Payments
 import 'package:ecommerce_mobile/modules/payment/screens/payment_method_screen.dart';
 import 'package:ecommerce_mobile/modules/payment/screens/new_card_screen.dart';
 import 'package:ecommerce_mobile/modules/payment/screens/upi_payment_screen.dart';
@@ -36,54 +36,46 @@ import 'package:ecommerce_mobile/modules/orders/screens/orders_screen.dart';
 import 'package:ecommerce_mobile/modules/orders/screens/track_order_screen.dart';
 import 'package:ecommerce_mobile/models/order_model.dart';
 
-/// Checkout
-import 'package:ecommerce_mobile/modules/checkout/screens/checkout_screen.dart';
-import 'package:ecommerce_mobile/modules/checkout/screens/payments_screen.dart';
+/// Notifications and Notification Settings
+import 'package:ecommerce_mobile/modules/notifications/screens/notification_settings_screen.dart';
+import 'package:ecommerce_mobile/modules/notifications/screens/notifications_screen.dart';
+
+///Accounts Screens
+import 'package:ecommerce_mobile/modules/home/screens/faqs_screen.dart';
+import 'package:ecommerce_mobile/modules/home/screens/help_center_screen.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
-    debugPrint('Route requested: ${settings.name} — args: ${settings.arguments?.runtimeType}');
 
     switch (settings.name) {
-
       /// AUTH
       case Routes.splash:
-        return MaterialPageRoute(builder: (_) => const SplashScreen(), settings: settings);
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
 
       case Routes.login:
-        return MaterialPageRoute(builder: (_) => const LoginScreen(), settings: settings);
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
 
       case Routes.register:
-        return MaterialPageRoute(builder: (_) => const RegisterScreen(), settings: settings);
+        return MaterialPageRoute(builder: (_) => const RegisterScreen());
 
       case Routes.forgotPassword:
-        return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen(), settings: settings);
+        return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
 
       case Routes.otp:
-        return MaterialPageRoute(builder: (_) => const OtpScreen(), settings: settings);
+        return MaterialPageRoute(builder: (_) => const OtpScreen());
 
       case Routes.resetPassword:
-        return MaterialPageRoute(builder: (_) => const ResetPasswordScreen(), settings: settings);
-
+        return MaterialPageRoute(builder: (_) => const ResetPasswordScreen());
 
       /// HOME
       case Routes.home:
-        return MaterialPageRoute(builder: (_) => const HomeShell(), settings: settings);
+        return MaterialPageRoute(builder: (_) => const HomeShell());
 
-      /// OLD SEARCH → Redirect to NEW SEARCH SUGGESTIONS
       case Routes.search:
-        return MaterialPageRoute(
-          builder: (_) => const SearchSuggestionsScreen(),
-          settings: settings,
-        );
-
-      /// NEW SEARCH SCREENS
       case Routes.searchSuggestions:
         return MaterialPageRoute(
-          builder: (_) => const SearchSuggestionsScreen(),
-          settings: settings,
-        );
+            builder: (_) => const SearchSuggestionsScreen());
 
       case Routes.searchResults:
         return MaterialPageRoute(
@@ -91,80 +83,97 @@ class RouteGenerator {
           settings: RouteSettings(arguments: args),
         );
 
-
-      /// CART, CHECKOUT, SAVED
+      /// CART / SAVED
       case Routes.cart:
-        return MaterialPageRoute(builder: (_) => const CartScreen(), settings: settings);
-
-      case Routes.checkout:
-        return MaterialPageRoute(builder: (_) => const CheckoutScreen(), settings: settings);
+        return MaterialPageRoute(builder: (_) => const CartScreen());
 
       case Routes.saved:
-        return MaterialPageRoute(builder: (_) => const SavedScreen(), settings: settings);
+        return MaterialPageRoute(builder: (_) => const SavedScreen());
 
+      /// CHECKOUT
+      case Routes.checkout:
+        return MaterialPageRoute(builder: (_) => const CheckoutScreen());
 
-      /// PAYMENT (Checkout)
       case Routes.payment:
-        return MaterialPageRoute(builder: (_) => const PaymentsScreen(), settings: settings);
+        return MaterialPageRoute(builder: (_) => const PaymentsScreen());
 
-
-      /// ADDRESS BOOK
+      /// ADDRESS
       case Routes.addresses:
-        return MaterialPageRoute(builder: (_) => const AddressesScreen(), settings: settings);
+        return MaterialPageRoute(builder: (_) => const AddressesScreen());
 
       case Routes.addressesNew:
-        return MaterialPageRoute(builder: (_) => const NewAddressScreen(), settings: settings);
-
+        return MaterialPageRoute(builder: (_) => const NewAddressScreen());
 
       /// PAYMENT
       case Routes.paymentMethods:
-        return MaterialPageRoute(builder: (_) => PaymentMethodScreen(), settings: settings);
+        return MaterialPageRoute(builder: (_) => PaymentMethodScreen());
 
       case Routes.newCard:
-        return MaterialPageRoute(builder: (_) => NewCardScreen(), settings: settings);
+        return MaterialPageRoute(builder: (_) => NewCardScreen());
 
       case Routes.upi:
-        return MaterialPageRoute(builder: (_) => UpiPaymentScreen(), settings: settings);
-
+        return MaterialPageRoute(builder: (_) => UpiPaymentScreen());
 
       /// PRODUCTS
       case Routes.productDetails:
-        final Map<String, dynamic> productArgs =
-            (args is Map<String, dynamic>) ? args : {};
         return MaterialPageRoute(
-          builder: (_) => ProductDetailsScreen(data: productArgs),
-          settings: settings,
+          builder: (_) => ProductDetailsScreen(
+            data: args is Map<String, dynamic> ? args : {},
+          ),
         );
 
       case Routes.reviews:
-        return MaterialPageRoute(builder: (_) => const ReviewsScreen(), settings: settings);
-
+        return MaterialPageRoute(builder: (_) => const ReviewsScreen());
 
       /// ORDERS
       case Routes.orders:
-        return MaterialPageRoute(builder: (_) => const OrdersScreen(), settings: settings);
+        return MaterialPageRoute(builder: (_) => const OrdersScreen());
 
       case Routes.trackOrder:
         if (args is OrderModel) {
-          return MaterialPageRoute(builder: (_) => TrackOrderScreen(order: args), settings: settings);
+          return MaterialPageRoute(
+            builder: (_) => TrackOrderScreen(order: args),
+          );
         }
+        return _errorRoute('Missing order data');
+
+      /// NOTIFICATION SETTINGS
+      case Routes.notificationSettings:
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Missing order data')),
-          ),
+          builder: (_) => const NotificationSettingsScreen(),
+        );
+
+      /// NOTIFICATIONS
+      case Routes.notifications:
+        return MaterialPageRoute(
+          builder: (_) => const NotificationsScreen(),
           settings: settings,
         );
 
+      /// FAQS SCREEN
+      case Routes.faqs:
+        return MaterialPageRoute(
+          builder: (_) => const FaqsScreen(),
+        );
+
+      /// HELP CENTER SCREEN
+      case Routes.helpCenter:
+        return MaterialPageRoute(
+          builder: (_) => const HelpCenterScreen(),
+        );
 
       /// DEFAULT
       default:
-        return MaterialPageRoute(
-          builder: (_) => Scaffold(
-            appBar: AppBar(title: const Text("Page not found")),
-            body: Center(child: Text("No route defined for ${settings.name}")),
-          ),
-          settings: settings,
-        );
+        return _errorRoute('No route defined for ${settings.name}');
     }
+  }
+
+  static Route<dynamic> _errorRoute(String message) {
+    return MaterialPageRoute(
+      builder: (_) => Scaffold(
+        appBar: AppBar(title: const Text('Page not found')),
+        body: Center(child: Text(message)),
+      ),
+    );
   }
 }
