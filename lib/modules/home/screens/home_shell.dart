@@ -8,6 +8,7 @@ import 'package:ecommerce_mobile/modules/home/screens/saved_screen.dart';
 import 'package:ecommerce_mobile/modules/cart/screens/cart_screen.dart';
 import 'account_screen.dart';
 import 'package:ecommerce_mobile/routes/route_generator.dart';
+import 'package:ecommerce_mobile/services/cart_manager.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -19,36 +20,33 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
 
-  
-  final List<GlobalKey<NavigatorState>> _navigatorKeys = List.generate(5, (_) => GlobalKey<NavigatorState>());
+  final List<GlobalKey<NavigatorState>> _navigatorKeys =
+      List.generate(5, (_) => GlobalKey<NavigatorState>());
 
- 
-  final List<Widget> _pages = [
+  final List<Widget> _pages = const [
     DiscoverTab(),
     SearchScreen(),
-    const SavedScreen(),
+    SavedScreen(),
     CartScreen(),
     AccountScreen(),
   ];
 
-  
   Widget _buildTabNavigator(int tabIndex) {
     final Widget initialPage = _pages[tabIndex];
 
     return Navigator(
       key: _navigatorKeys[tabIndex],
-      
-      onGenerateInitialRoutes: (NavigatorState navigator, String initialRouteName) {
+      onGenerateInitialRoutes: (navigator, initialRouteName) {
         return [
           MaterialPageRoute(
             builder: (context) {
-              // Preserve the same constrained/padding behavior you had previously.
               final shouldApplyPadding = initialPage is DiscoverTab;
               Widget page = initialPage;
 
               if (shouldApplyPadding) {
                 page = Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                   child: page,
                 );
               }
@@ -63,45 +61,30 @@ class _HomeShellState extends State<HomeShell> {
           )
         ];
       },
-
-      // Use your global RouteGenerator for any named routes pushed inside the tab.
-      // That allows existing Navigator.pushNamed(...) calls to work as before,
-      // but pushed onto the tab's own stack.
-      onGenerateRoute: (RouteSettings settings) {
-        // NOTE: RouteGenerator.generateRoute is the function used in main.dart.
-        // It returns Route<dynamic>? and matches Navigator.onGenerateRoute signature.
-        return RouteGenerator.generateRoute(settings);
-      },
+      onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
-  //for future or other scenarios
-  // Back button handling:
-  // - If current tab navigator can pop => pop it
-  // - Else if not on first tab => switch to first tab
-  // - Else allow system to pop (exit app)
+
   Future<bool> _onWillPop() async {
     final currentNav = _navigatorKeys[_index].currentState;
     if (currentNav == null) return true;
 
     if (currentNav.canPop()) {
       currentNav.pop();
-      return false; // we handled back
+      return false;
     }
 
     if (_index != 0) {
       setState(() => _index = 0);
-      return false; // switched tab instead of exiting
+      return false;
     }
 
-    return true; // allow app to exit
+    return true;
   }
 
-  // When selecting a tab:
-  // - If it's the same tab, pop to first route inside that tab.
-  // - If it's a different tab, switch to it.
   void _selectTab(int i) {
     if (i == _index) {
-      _navigatorKeys[i].currentState?.popUntil((route) => route.isFirst);
+      _navigatorKeys[i].currentState?.popUntil((r) => r.isFirst);
     } else {
       setState(() => _index = i);
     }
@@ -112,16 +95,21 @@ class _HomeShellState extends State<HomeShell> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        // IndexedStack keeps each tab's navigator (and its state) alive.
         body: IndexedStack(
           index: _index,
           children: List.generate(_pages.length, (i) => _buildTabNavigator(i)),
         ),
 
-        // Reuse your AppBottomNav — it now controls the outer shell's selected tab.
-        bottomNavigationBar: AppBottomNav(
-          currentIndex: _index,
-          onChanged: (i) => _selectTab(i),
+        /// 🔑 KEY FIX:
+        /// Rebuild bottom navigation whenever cart changes
+        bottomNavigationBar: AnimatedBuilder(
+          animation: CartManager.instance,
+          builder: (context, _) {
+            return AppBottomNav(
+              currentIndex: _index,
+              onChanged: (i) => _selectTab(i),
+            );
+          },
         ),
       ),
     );

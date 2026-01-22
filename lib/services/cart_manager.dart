@@ -46,7 +46,8 @@ class CartManager extends ChangeNotifier {
 
   /// Update quantity; if quantity <= 0 then move to Saved items.
   void updateQuantity(dynamic id, String? size, int quantity) {
-    final idx = _items.indexWhere((it) => it.id == id && (size == null || it.size == size));
+    final idx = _items
+        .indexWhere((it) => it.id == id && (size == null || it.size == size));
     if (idx >= 0) {
       if (quantity <= 0) {
         moveToSaved(id, size: size);
@@ -60,7 +61,8 @@ class CartManager extends ChangeNotifier {
 
   /// Hard remove without moving to saved (for internal use if needed)
   void removePermanently(dynamic id, {String? size}) {
-    _items.removeWhere((it) => it.id == id && (size == null || it.size == size));
+    _items
+        .removeWhere((it) => it.id == id && (size == null || it.size == size));
     notifyListeners();
   }
 

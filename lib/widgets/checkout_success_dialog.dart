@@ -1,75 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
-
 import '../globals/text_styles.dart';
 
 class CheckoutSuccessDialog extends StatelessWidget {
-  final VoidCallback? onTrack;
+  final VoidCallback onTrack;
   final String title;
   final String message;
   final String actionText;
 
   const CheckoutSuccessDialog({
     Key? key,
-    this.onTrack,
+    required this.onTrack,
     this.title = 'Congratulations!',
-    this.message = 'oops Your order has been placed.',
+    this.message = 'Your order has been placed.',
     this.actionText = 'Track Your Order',
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      insetPadding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
       backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 28),
       child: Container(
-        padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+        padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
         decoration: BoxDecoration(
-          color: Theme.of(context).canvasColor,
-          borderRadius: BorderRadius.circular(18),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 18, offset: const Offset(0, 6)),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
+            ),
           ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 78,
-              height: 78,
+              width: 72,
+              height: 72,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.green.withOpacity(0.12),
-                border: Border.all(color: Colors.green, width: 4),
+                color: AppColors.success.withOpacity(0.15),
+                border: Border.all(color: AppColors.success, width: 3),
               ),
-              child: const Center(child: Icon(Icons.check, size: 44, color: Colors.green)),
+              child: const Icon(
+                Icons.check_rounded,
+                size: 40,
+                color: AppColors.success,
+              ),
             ),
             const SizedBox(height: 18),
             Text(title, style: AppTextStyles.h2, textAlign: TextAlign.center),
-            const SizedBox(height: 8),
-            Text(message, style: AppTextStyles.caption, textAlign: TextAlign.center),
-            const SizedBox(height: 20),
-SizedBox(
-  width: double.infinity,
-  child: ElevatedButton(
-    onPressed: () {
-      Navigator.of(context).pop(); // close dialog
-      if (onTrack != null) onTrack!();
-    },
-    style: ElevatedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      backgroundColor: AppColors.primary ?? Colors.black,
-    ),
-    child: Text(
-      actionText,
-      style: AppTextStyles.body.copyWith(
-        fontWeight: FontWeight.w700,
-        color: Colors.white,
-      ),
-    ),
-  ),
-),
+            const SizedBox(height: 6),
+            Text(message,
+                style: AppTextStyles.caption, textAlign: TextAlign.center),
+            const SizedBox(height: 22),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  onTrack();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  actionText,
+                  style: AppTextStyles.body.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
