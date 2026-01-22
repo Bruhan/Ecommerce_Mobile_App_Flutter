@@ -21,18 +21,18 @@ class ApiService {
     return apiLink;
   }
 
-  Future<Map<String, String>> getHeaders() async {
+  Future<Map<String, String>> getHeaders({ bool? includeAuth = true }) async {
     final accessToken = await getAccessToken();
     return {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Origin': Globals.ORIGIN,
-      if(accessToken != null) 'Authorization': 'Bearer $accessToken',
+      if(accessToken != null && includeAuth!) 'Authorization': 'Bearer $accessToken',
     };
   }
 
   Future<dynamic> get(String endpoint) async {
-    final baseUrl = await getApiLink();
+    final baseUrl = getApiLink();
     final uri = Uri.parse('$baseUrl$endpoint');
     try {
       final headers = await getHeaders();
@@ -45,12 +45,14 @@ class ApiService {
     }
   }
 
-  Future<dynamic> post(String endpoint, String body) async {
+  Future<dynamic> post(String endpoint, String body, { bool? includeAuth = true }) async {
 
-    final baseUrl = await getApiLink();
+    final baseUrl = getApiLink();
     final uri = Uri.parse('$baseUrl$endpoint');
     try {
-      final headers = await getHeaders();
+      final headers = await getHeaders(includeAuth: includeAuth);
+      print("Headers : $headers");
+      print("Body : $body");
       final response = await http.post(
           uri, headers: headers, body: body);
       return _processResponse(response);
@@ -61,7 +63,7 @@ class ApiService {
 
 
   Future<dynamic> multipartPost(String endpoint, Map<String, dynamic> fields, Map<String, File>? files) async {
-    final baseUrl = await getApiLink();
+    final baseUrl = getApiLink();
     final uri = Uri.parse('$baseUrl$endpoint');
     try {
       var request = http.MultipartRequest('POST', uri);
@@ -93,7 +95,7 @@ class ApiService {
 
   Future<dynamic> put(String endpoint, String body) async {
 
-    final baseUrl = await getApiLink();
+    final baseUrl = getApiLink();
     final uri = Uri.parse('$baseUrl$endpoint');
     try {
       final headers = await getHeaders();
@@ -107,7 +109,7 @@ class ApiService {
 
 
   Future<dynamic> multipartPut(String endpoint, Map<String, dynamic> body, List<dynamic> files) async {
-    final baseUrl = await getApiLink();
+    final baseUrl = getApiLink();
     final uri = Uri.parse('$baseUrl$endpoint');
     try {
       var request = http.MultipartRequest('PUT', uri);
@@ -128,7 +130,7 @@ class ApiService {
 
   Future<dynamic> delete(String endpoint) async {
 
-    final baseUrl = await getApiLink();
+    final baseUrl = getApiLink();
     final uri = Uri.parse('$baseUrl$endpoint');
     try {
       final headers = await getHeaders();
@@ -140,6 +142,7 @@ class ApiService {
   }
 
   dynamic _processResponse(http.Response response) {
+    print(response.body);
     switch (response.statusCode) {
       case 200:
       case 201:

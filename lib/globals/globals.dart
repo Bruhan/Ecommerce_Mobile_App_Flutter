@@ -11,7 +11,7 @@ class Globals {
       plant == "C2620614616S2T";
 
   // static String ORIGIN = "localhost:3000";
-  static String ORIGIN = "https://mooremarket.u-clo.com";
+  static String ORIGIN = "https://mooremarket.in";
 
   // 🌐 BASE API URL (keep old ones commented)
   static String API_BASE_URL =

@@ -59,13 +59,17 @@ class _LoginScreenState extends State<LoginScreen> {
         'loginType': "user"
       };
 
+
       final res =
-          await _apiService.post(AuthApiRoutes.loginWithPassword, json.encode(reqBody));
+          await _apiService.post(AuthApiRoutes.loginWithPassword, json.encode(reqBody), includeAuth: false);
+
 
       WebResponse<LoginWithPasswordResponse> response =
           WebResponse.fromJson(res, (data) {
         return LoginWithPasswordResponse.fromJson(data);
       });
+
+
 
       if (response.statusCode == 401) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -101,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       setState(() => _loading = false);
     } catch (err, st) {
-      debugPrint('Login error: $err\n$st');
+      // debugPrint('Login error: $err\n$st');
       setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(err.toString())),
