@@ -8,6 +8,7 @@ import 'package:ecommerce_mobile/modules/home/constants/product-api.constant.dar
 import 'package:ecommerce_mobile/modules/home/types/book_product_response.dart';
 import 'package:ecommerce_mobile/network/product_service.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:ecommerce_mobile/services/saved_manager.dart';
 
 import '../../../globals/text_styles.dart';
 import '../../general/types/api.types.dart';
@@ -40,8 +41,6 @@ class _DiscoverTabState extends State<DiscoverTab> {
   List<Map<String, dynamic>> productsFiltered = [];
 
   Map<String, dynamic>? lastAppliedFilters;
-
-  final Set<String> _savedProductIds = <String>{};
 
   @override
   void initState() {
@@ -159,145 +158,128 @@ class _DiscoverTabState extends State<DiscoverTab> {
             ? 3
             : 4;
 
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg, AppSpacing.xl, AppSpacing.lg, 0),
-            child: Row(
-              children: [
-                Text('Discover', style: AppTextStyles.h1),
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.notifications_none_rounded),
-                  onPressed: () =>
-                      Navigator.pushNamed(context, Routes.notifications),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.tune_rounded),
-                  onPressed: () async {
-                    final res =
-                        await showModalBottomSheet<Map<String, dynamic>>(
-                      context: context,
-                      isScrollControlled: true,
-                      useSafeArea: true,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(16)),
-                      ),
-                      builder: (_) => const FilterSheet(),
-                    );
+    return ValueListenableBuilder<List<Map<String, dynamic>>>(
+      valueListenable: SavedManager.instance.notifier,
+      builder: (context, _, __) {
+        return CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg, AppSpacing.xl, AppSpacing.lg, 0),
+                child: Row(
+                  children: [
+                    Text('Discover', style: AppTextStyles.h1),
+                    const Spacer(),
+                    IconButton(
+                      icon: const Icon(Icons.notifications_none_rounded),
+                      onPressed: () =>
+                          Navigator.pushNamed(context, Routes.notifications),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.tune_rounded),
+                      onPressed: () async {
+                        final res =
+                            await showModalBottomSheet<Map<String, dynamic>>(
+                          context: context,
+                          isScrollControlled: true,
+                          useSafeArea: true,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.vertical(top: Radius.circular(16)),
+                          ),
+                          builder: (_) => const FilterSheet(),
+                        );
 
-                    if (res != null) {
-                      lastAppliedFilters = res;
-                      _applyFilters();
-                    }
-                  },
+                        if (res != null) {
+                          lastAppliedFilters = res;
+                          _applyFilters();
+                        }
+                      },
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: AppTextField(
-              hint: 'Search books...',
-              prefix: const Icon(Icons.search),
-              readOnly: true,
-              onTap: () => Navigator.pushNamed(context, Routes.search),
-            ),
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.only(left: AppSpacing.lg),
-            child: SizedBox(
-              height: 40,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: _categories.length,
-                separatorBuilder: (_, __) =>
-                    const SizedBox(width: AppSpacing.sm),
-                itemBuilder: (_, i) {
-                  final selected = _selectedCategory == i;
-                  return ChoiceChip(
-                    label: Text(_categories[i]),
-                    selected: selected,
-                    selectedColor: Colors.black,
-                    backgroundColor: const Color(0xFFF5F5F5),
-                    labelStyle: selected
-                        ? AppTextStyles.body.copyWith(color: Colors.white)
-                        : AppTextStyles.body,
-                    onSelected: (_) {
-                      setState(() => _selectedCategory = i);
-                      _applyFilters();
-                    },
-                  );
-                },
               ),
             ),
-          ),
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          sliver: isLoading
-              ? const SliverToBoxAdapter(
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(40),
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-                )
-              : SliverGrid(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final item = productsFiltered[index];
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: AppTextField(
+                  hint: 'Search books...',
+                  prefix: const Icon(Icons.search),
+                  readOnly: true,
+                  onTap: () => Navigator.pushNamed(context, Routes.search),
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              sliver: isLoading
+                  ? const SliverToBoxAdapter(
+                      child: Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(40),
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    )
+                  : SliverGrid(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final item = productsFiltered[index];
 
-                      final price = item['price'] as int;
-                      final mrp = item['mrp'] as int;
-                      final discount = mrp > price ? 1 - price / mrp : null;
+                          final price = item['price'] as int;
+                          final mrp = item['mrp'] as int;
+                          final discount = mrp > price ? 1 - price / mrp : null;
 
-                      String? badge;
-                      if (discount != null && discount >= 0.3) {
-                        badge = 'Sale';
-                      } else if (index % 6 == 0) {
-                        badge = 'Top';
-                      }
+                          String? badge;
+                          if (discount != null && discount >= 0.3) {
+                            badge = 'Sale';
+                          } else if (index % 6 == 0) {
+                            badge = 'Top';
+                          }
 
-                      return ProductCard(
-                        imageUrl: item['imageUrl'],
-                        title: item['title'],
-                        price: price,
-                        discount: discount,
-                        author: item['author'],
-                        rating: item['rating'],
-                        badge: badge,
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            Routes.productDetails,
-                            arguments: item,
+                          final String id = item['id'].toString();
+                          final bool isSaved =
+                              SavedManager.instance.isSaved(id);
+
+                          return ProductCard(
+                            imageUrl: item['imageUrl'],
+                            title: item['title'],
+                            price: price,
+                            discount: discount,
+                            author: item['author'],
+                            rating: item['rating'],
+                            badge: badge,
+                            isSaved: isSaved,
+                            onSavedChanged: (_) {
+                              SavedManager.instance.toggle(item);
+                            },
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                Routes.productDetails,
+                                arguments: item,
+                              );
+                            },
                           );
                         },
-                      );
-                    },
-                    childCount: productsFiltered.length,
-                  ),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: crossAxisCount,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 0.66,
-                  ),
-                ),
-        ),
-        const SliverToBoxAdapter(
-          child: SizedBox(height: AppSpacing.xxl),
-        ),
-      ],
+                        childCount: productsFiltered.length,
+                      ),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                        childAspectRatio: 0.66,
+                      ),
+                    ),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: AppSpacing.xxl),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -1,4 +1,3 @@
-// lib/modules/products/screens/product_details_screen.dart
 import 'package:flutter/material.dart';
 import 'package:ecommerce_mobile/globals/theme.dart';
 import 'package:ecommerce_mobile/widgets/app_button.dart';
@@ -56,7 +55,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   void initState() {
     super.initState();
     _productId = _deriveId(widget.data);
-    _isSavedNotifier = ValueNotifier<bool>(_productId != null && SavedManager.instance.isSaved(_productId!));
+    _isSavedNotifier = ValueNotifier<bool>(
+        _productId != null && SavedManager.instance.isSaved(_productId!));
     SavedManager.instance.notifier.addListener(_savedListener);
 
     // Optionally you could check cart manager here to mark already-in-cart,
@@ -78,8 +78,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   String? _deriveId(Map<String, dynamic> data) {
-    if (data.containsKey('id') && data['id'] != null) return data['id'].toString();
-    if (data.containsKey('title') && data['title'] != null) return data['title'].toString();
+    if (data.containsKey('id') && data['id'] != null)
+      return data['id'].toString();
+    if (data.containsKey('title') && data['title'] != null)
+      return data['title'].toString();
     return null;
   }
 
@@ -94,7 +96,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       );
     } else if (_scrollController.hasClients) {
       final max = _scrollController.position.maxScrollExtent;
-      await _scrollController.animateTo(max, duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+      await _scrollController.animateTo(max,
+          duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
     }
   }
 
@@ -179,7 +182,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: AppSpacing.lg),
-        Text('More Books By $author', style: AppTextStyles.h2.copyWith(fontSize: 18)),
+        Text('More Books By $author',
+            style: AppTextStyles.h2.copyWith(fontSize: 18)),
         const SizedBox(height: AppSpacing.md),
         SizedBox(
           height: 170,
@@ -190,15 +194,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             itemBuilder: (ctx, i) {
               final it = items[i];
               final String title = (it['title'] ?? it['name'] ?? '').toString();
-              final String img = (it['imageUrl'] ?? it['image'] ?? '').toString();
-              final int price = (it['price'] ?? it['mrp'] ?? it['amount'] ?? 0).toInt();
+              final String img =
+                  (it['imageUrl'] ?? it['image'] ?? '').toString();
+              final int price =
+                  (it['price'] ?? it['mrp'] ?? it['amount'] ?? 0).toInt();
 
               return GestureDetector(
                 onTap: () {
                   // push details for that book (reusing same screen)
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => ProductDetailsScreen(data: it)),
+                    MaterialPageRoute(
+                        builder: (_) => ProductDetailsScreen(data: it)),
                   );
                 },
                 child: SizedBox(
@@ -209,13 +216,25 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: img.isNotEmpty
-                            ? Image.network(img, width: 130, height: 110, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(width: 130, height: 110, color: AppColors.bg))
-                            : Container(width: 130, height: 110, color: AppColors.bg),
+                            ? Image.network(img,
+                                width: 130,
+                                height: 110,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Container(
+                                    width: 130,
+                                    height: 110,
+                                    color: AppColors.bg))
+                            : Container(
+                                width: 130, height: 110, color: AppColors.bg),
                       ),
                       const SizedBox(height: 8),
-                      Text(title, maxLines: 2, overflow: TextOverflow.ellipsis, style: AppTextStyles.body?.copyWith(fontSize: 13)),
+                      Text(title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.body?.copyWith(fontSize: 13)),
                       const SizedBox(height: 6),
-                      Text('₹${price.toString()}', style: AppTextStyles.caption),
+                      Text('₹${price.toString()}',
+                          style: AppTextStyles.caption),
                     ],
                   ),
                 ),
@@ -242,13 +261,25 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           padding: const EdgeInsets.symmetric(vertical: 6.0),
           child: Row(
             children: [
-              Text('$star', style: AppTextStyles.body?.copyWith(fontWeight: FontWeight.w600)),
+              Text('$star',
+                  style: AppTextStyles.body
+                      ?.copyWith(fontWeight: FontWeight.w600)),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Stack(
                   children: [
-                    Container(height: 10, decoration: BoxDecoration(color: accentColor, borderRadius: BorderRadius.circular(8))),
-                    FractionallySizedBox(widthFactor: ratio, child: Container(height: 10, decoration: BoxDecoration(color: fillColor, borderRadius: BorderRadius.circular(8)))),
+                    Container(
+                        height: 10,
+                        decoration: BoxDecoration(
+                            color: accentColor,
+                            borderRadius: BorderRadius.circular(8))),
+                    FractionallySizedBox(
+                        widthFactor: ratio,
+                        child: Container(
+                            height: 10,
+                            decoration: BoxDecoration(
+                                color: fillColor,
+                                borderRadius: BorderRadius.circular(8)))),
                   ],
                 ),
               ),
@@ -267,9 +298,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       contentPadding: EdgeInsets.zero,
       title: Row(
         children: [
-          Row(children: List.generate(5, (i) => Icon(Icons.star, color: i < rating ? Colors.amber : Colors.grey.withOpacity(0.4), size: 16))),
+          Row(
+              children: List.generate(
+                  5,
+                  (i) => Icon(Icons.star,
+                      color: i < rating
+                          ? Colors.amber
+                          : Colors.grey.withOpacity(0.4),
+                      size: 16))),
           const SizedBox(width: AppSpacing.sm),
-          Text('${r['name']}', style: AppTextStyles.body?.copyWith(fontWeight: FontWeight.w600)),
+          Text('${r['name']}',
+              style: AppTextStyles.body?.copyWith(fontWeight: FontWeight.w600)),
         ],
       ),
       subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -286,20 +325,37 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     final data = widget.data;
 
     final title = (data['title'] ?? data['name'] ?? 'Untitled').toString();
-    final images = List<String>.from(data['imageUrls'] ?? data['images'] ?? [data['imageUrl'] ?? data['image'] ?? 'https://picsum.photos/seed/book/800/800']);
+    final images = List<String>.from(data['imageUrls'] ??
+        data['images'] ??
+        [
+          data['imageUrl'] ??
+              data['image'] ??
+              'https://picsum.photos/seed/book/800/800'
+        ]);
     final price = (data['price'] ?? data['mrp'] ?? 199).toInt();
-    final description = data['description'] ?? data['summary'] ?? 'No description provided.';
+    final description =
+        data['description'] ?? data['summary'] ?? 'No description provided.';
     final rating = (data['rating'] ?? 4.5).toDouble();
-    final reviewsCount = (data['reviewsCount'] ?? data['reviews']?.length ?? 45).toInt();
+    final reviewsCount =
+        (data['reviewsCount'] ?? data['reviews']?.length ?? 45).toInt();
 
     // book-specific fields
-    final author = (data['author'] ?? data['writtenBy'] ?? data['writer'] ?? 'Unknown Author').toString();
+    final author = (data['author'] ??
+            data['writtenBy'] ??
+            data['writer'] ??
+            'Unknown Author')
+        .toString();
     final publisher = (data['publisher'] ?? '').toString();
     final edition = (data['edition'] ?? '').toString();
     final promoTag = (data['promoTag'] ?? data['badge'] ?? '').toString();
-    final deliveryInfo = (data['deliveryInfo'] ?? 'Get your order in 2-3 days across Tamil Nadu, and 5-7 days for other states.').toString();
+    final deliveryInfo = (data['deliveryInfo'] ??
+            'Get your order in 2-3 days across Tamil Nadu, and 5-7 days for other states.')
+        .toString();
     final moreByAuthorRaw = data['moreByAuthor'] ?? data['authorBooks'] ?? [];
-    final List<Map<String, dynamic>> moreByAuthor = (moreByAuthorRaw is List) ? List<Map<String, dynamic>>.from(moreByAuthorRaw.map((e) => e is Map ? Map<String, dynamic>.from(e) : {'title': e.toString()})) : [];
+    final List<Map<String, dynamic>> moreByAuthor = (moreByAuthorRaw is List)
+        ? List<Map<String, dynamic>>.from(moreByAuthorRaw.map((e) =>
+            e is Map ? Map<String, dynamic>.from(e) : {'title': e.toString()}))
+        : [];
 
     // page padding and "is wide" detection (tablet/desktop)
     final double pagePadding = AppSpacing.lg;
@@ -318,13 +374,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         title: Text('Details', style: AppTextStyles.h2),
         actions: [
           // KEEP only the single heart in the details row (remove top overlay heart)
-          IconButton(
-            onPressed: () => SavedManager.instance.toggle(data),
-            icon: ValueListenableBuilder<bool>(
-              valueListenable: _isSavedNotifier,
-              builder: (_, saved, __) => Icon(saved ? Icons.favorite : Icons.favorite_border, color: saved ? Colors.red : Colors.black),
-            ),
-          ),
+          // IconButton(
+          //   onPressed: () => SavedManager.instance.toggle(data),
+          //   icon: ValueListenableBuilder<bool>(
+          //     valueListenable: _isSavedNotifier,
+          //     builder: (_, saved, __) => Icon(
+          //         saved ? Icons.favorite : Icons.favorite_border,
+          //         color: saved ? Colors.red : Colors.black),
+          //   ),
+          // ),
           IconButton(
             onPressed: () => Navigator.pushNamed(context, Routes.notifications),
             icon: const Icon(Icons.notifications_outlined, size: 22),
@@ -353,7 +411,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               images.first,
                               width: double.infinity,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(color: AppColors.surface),
+                              errorBuilder: (_, __, ___) =>
+                                  Container(color: AppColors.surface),
                             ),
                           ),
                         ),
@@ -363,10 +422,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             itemCount: images.length,
-                            separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(width: AppSpacing.sm),
                             itemBuilder: (ctx, i) => ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Image.network(images[i], width: 80, height: 80, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(width: 80, height: 80, color: AppColors.bg)),
+                              child: Image.network(images[i],
+                                  width: 80,
+                                  height: 80,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(
+                                      width: 80,
+                                      height: 80,
+                                      color: AppColors.bg)),
                             ),
                           ),
                         ),
@@ -389,26 +456,46 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             const SizedBox(height: AppSpacing.sm),
                             Row(
                               children: [
-                                Expanded(child: Text(title, style: AppTextStyles.h2.copyWith(fontSize: 22), maxLines: 3, overflow: TextOverflow.ellipsis)),
+                                Expanded(
+                                    child: Text(title,
+                                        style: AppTextStyles.h2
+                                            .copyWith(fontSize: 22),
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis)),
                                 const SizedBox(width: 8),
                                 // keep only this heart (already in AppBar as well) — this one stays
                                 ValueListenableBuilder<bool>(
                                   valueListenable: _isSavedNotifier,
                                   builder: (_, saved, __) => IconButton(
-                                    onPressed: () => SavedManager.instance.toggle(data),
-                                    icon: Icon(saved ? Icons.favorite : Icons.favorite_border, color: saved ? Colors.red : mutedColor),
+                                    onPressed: () =>
+                                        SavedManager.instance.toggle(data),
+                                    icon: Icon(
+                                        saved
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
+                                        color: saved ? Colors.red : mutedColor),
                                   ),
                                 )
                               ],
                             ),
                             const SizedBox(height: 8),
-                            Text('by $author', style: AppTextStyles.body?.copyWith(fontWeight: FontWeight.w700)),
+                            Text('by $author',
+                                style: AppTextStyles.body
+                                    ?.copyWith(fontWeight: FontWeight.w700)),
                             const SizedBox(height: 6),
                             Row(
                               children: [
-                                if (publisher.isNotEmpty) Flexible(child: Text(publisher, style: AppTextStyles.caption)),
-                                if (edition.isNotEmpty) const SizedBox(width: 12),
-                                if (edition.isNotEmpty) Flexible(child: Text(edition, style: AppTextStyles.caption?.copyWith(color: mutedColor))),
+                                if (publisher.isNotEmpty)
+                                  Flexible(
+                                      child: Text(publisher,
+                                          style: AppTextStyles.caption)),
+                                if (edition.isNotEmpty)
+                                  const SizedBox(width: 12),
+                                if (edition.isNotEmpty)
+                                  Flexible(
+                                      child: Text(edition,
+                                          style: AppTextStyles.caption
+                                              ?.copyWith(color: mutedColor))),
                               ],
                             ),
                             const SizedBox(height: 12),
@@ -417,40 +504,65 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               onTap: _scrollToReviews,
                               child: Row(
                                 children: [
-                                  const Icon(Icons.star, color: Colors.amber, size: 18),
+                                  const Icon(Icons.star,
+                                      color: Colors.amber, size: 18),
                                   const SizedBox(width: 6),
-                                  Text('${rating.toStringAsFixed(1)}/5', style: AppTextStyles.body?.copyWith(fontWeight: FontWeight.w600)),
+                                  Text('${rating.toStringAsFixed(1)}/5',
+                                      style: AppTextStyles.body?.copyWith(
+                                          fontWeight: FontWeight.w600)),
                                   const SizedBox(width: 8),
-                                  Text('($reviewsCount reviews)', style: AppTextStyles.caption),
+                                  Text('($reviewsCount reviews)',
+                                      style: AppTextStyles.caption),
                                   const Spacer(),
-                                  Text('See reviews', style: AppTextStyles.body?.copyWith(color: mutedColor)),
+                                  Text('See reviews',
+                                      style: AppTextStyles.body
+                                          ?.copyWith(color: mutedColor)),
                                   const SizedBox(width: 6),
-                                  Icon(Icons.arrow_forward_ios, size: 14, color: mutedColor),
+                                  Icon(Icons.arrow_forward_ios,
+                                      size: 14, color: mutedColor),
                                 ],
                               ),
                             ),
 
                             const SizedBox(height: AppSpacing.md),
-                            Text(description, style: AppTextStyles.body?.copyWith(fontSize: 15)),
+                            Text(description,
+                                style:
+                                    AppTextStyles.body?.copyWith(fontSize: 15)),
                             const SizedBox(height: AppSpacing.md),
 
                             // Format / Edition selector (bookstore)
-                            Text('Format / Edition', style: AppTextStyles.body?.copyWith(fontWeight: FontWeight.w600)),
+                            Text('Format / Edition',
+                                style: AppTextStyles.body
+                                    ?.copyWith(fontWeight: FontWeight.w600)),
                             const SizedBox(height: AppSpacing.sm),
                             Wrap(
                               spacing: AppSpacing.sm,
                               children: formats
                                   .map((f) => GestureDetector(
-                                        onTap: () => setState(() => _selectedFormat = f),
+                                        onTap: () =>
+                                            setState(() => _selectedFormat = f),
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                                          margin: const EdgeInsets.only(bottom: 6),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 14, vertical: 12),
+                                          margin:
+                                              const EdgeInsets.only(bottom: 6),
                                           decoration: BoxDecoration(
-                                            color: _selectedFormat == f ? AppColors.primary : Colors.white,
-                                            border: Border.all(color: mutedColor),
-                                            borderRadius: BorderRadius.circular(8),
+                                            color: _selectedFormat == f
+                                                ? AppColors.primary
+                                                : Colors.white,
+                                            border:
+                                                Border.all(color: mutedColor),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                           ),
-                                          child: Text(f, style: AppTextStyles.body?.copyWith(color: _selectedFormat == f ? Colors.white : AppColors.textPrimary)),
+                                          child: Text(f,
+                                              style: AppTextStyles.body
+                                                  ?.copyWith(
+                                                      color: _selectedFormat ==
+                                                              f
+                                                          ? Colors.white
+                                                          : AppColors
+                                                              .textPrimary)),
                                         ),
                                       ))
                                   .toList(),
@@ -460,10 +572,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             Row(
                               children: [
                                 Expanded(
-                                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                    Text('Price', style: AppTextStyles.caption),
-                                    Text('\₹${price.toInt()}', style: AppTextStyles.h2?.copyWith(fontSize: 22)),
-                                  ]),
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Price',
+                                            style: AppTextStyles.caption),
+                                        Text('\₹${price.toInt()}',
+                                            style: AppTextStyles.h2
+                                                ?.copyWith(fontSize: 22)),
+                                      ]),
                                 ),
                                 const SizedBox(width: 12),
 
@@ -479,34 +597,53 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           }),
                                           child: Container(
                                             padding: const EdgeInsets.all(6),
-                                            decoration: BoxDecoration(border: Border.all(color: AppColors.fieldBorder), borderRadius: BorderRadius.circular(6)),
-                                            child: const Icon(Icons.remove, size: 18),
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color:
+                                                        AppColors.fieldBorder),
+                                                borderRadius:
+                                                    BorderRadius.circular(6)),
+                                            child: const Icon(Icons.remove,
+                                                size: 18),
                                           ),
                                         ),
                                         const SizedBox(width: 8),
-                                        Text('$_quantity', style: AppTextStyles.body),
+                                        Text('$_quantity',
+                                            style: AppTextStyles.body),
                                         const SizedBox(width: 8),
                                         InkWell(
-                                          onTap: () => setState(() => _quantity++),
+                                          onTap: () =>
+                                              setState(() => _quantity++),
                                           child: Container(
                                             padding: const EdgeInsets.all(6),
-                                            decoration: BoxDecoration(border: Border.all(color: AppColors.fieldBorder), borderRadius: BorderRadius.circular(6)),
-                                            child: const Icon(Icons.add, size: 18),
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color:
+                                                        AppColors.fieldBorder),
+                                                borderRadius:
+                                                    BorderRadius.circular(6)),
+                                            child:
+                                                const Icon(Icons.add, size: 18),
                                           ),
                                         ),
                                       ],
                                     ),
                                     const SizedBox(height: 8),
                                     ConstrainedBox(
-                                      constraints: const BoxConstraints(maxWidth: 220),
+                                      constraints:
+                                          const BoxConstraints(maxWidth: 220),
                                       child: AppButton(
-                                        label: _addedToCart ? 'Go to Cart' : 'Add to Cart',
+                                        label: _addedToCart
+                                            ? 'Go to Cart'
+                                            : 'Add to Cart',
                                         onPressed: () {
                                           if (_addedToCart) {
-                                            Navigator.pushNamed(context, Routes.cart);
+                                            Navigator.pushNamed(
+                                                context, Routes.cart);
                                             return;
                                           }
-                                          final id = (data['id'] ?? title).toString();
+                                          final id =
+                                              (data['id'] ?? title).toString();
                                           _addToCart(
                                             id: id,
                                             title: title,
@@ -526,9 +663,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             const SizedBox(height: AppSpacing.xl),
                             if (promoTag.isNotEmpty)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                decoration: BoxDecoration(color: Colors.orange.shade100, borderRadius: BorderRadius.circular(8)),
-                                child: Text(promoTag, style: AppTextStyles.caption?.copyWith(fontWeight: FontWeight.w700)),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 6),
+                                decoration: BoxDecoration(
+                                    color: Colors.orange.shade100,
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: Text(promoTag,
+                                    style: AppTextStyles.caption?.copyWith(
+                                        fontWeight: FontWeight.w700)),
                               ),
                             const SizedBox(height: 12),
                             Text(deliveryInfo, style: AppTextStyles.caption),
@@ -549,23 +691,33 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 children: [
                                   Row(
                                     children: [
-                                      Expanded(child: Text('Reviews', style: AppTextStyles.h2.copyWith(fontSize: 20))),
+                                      Expanded(
+                                          child: Text('Reviews',
+                                              style: AppTextStyles.h2
+                                                  .copyWith(fontSize: 20))),
                                       const Spacer(),
-                                      TextButton(onPressed: () {}, child: const Text('Write a review'))
+                                      TextButton(
+                                          onPressed: () {},
+                                          child: const Text('Write a review'))
                                     ],
                                   ),
                                   const SizedBox(height: AppSpacing.sm),
                                   Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
-                                      Text(rating.toStringAsFixed(1), style: AppTextStyles.h1.copyWith(fontSize: 26)),
+                                      Text(rating.toStringAsFixed(1),
+                                          style: AppTextStyles.h1
+                                              .copyWith(fontSize: 26)),
                                       const SizedBox(width: AppSpacing.md),
                                       Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           _buildStars(rating, iconSize: 18),
                                           const SizedBox(height: 6),
-                                          Text('$reviewsCount Ratings', style: AppTextStyles.caption),
+                                          Text('$reviewsCount Ratings',
+                                              style: AppTextStyles.caption),
                                         ],
                                       ),
                                     ],
@@ -574,11 +726,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                   _ratingBars(accentColor, mutedColor),
                                   const SizedBox(height: AppSpacing.md),
                                   ListView.separated(
-                                    physics: const NeverScrollableScrollPhysics(),
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
                                     shrinkWrap: true,
                                     itemCount: _reviews.length,
-                                    separatorBuilder: (_, __) => const Divider(),
-                                    itemBuilder: (context, i) => _buildReviewTile(_reviews[i]),
+                                    separatorBuilder: (_, __) =>
+                                        const Divider(),
+                                    itemBuilder: (context, i) =>
+                                        _buildReviewTile(_reviews[i]),
                                   ),
                                   const SizedBox(height: AppSpacing.xl),
                                 ],
@@ -605,25 +760,38 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 // NOTE: removed the top-right overlay heart; image is just the image now
                 ClipRRect(
                   borderRadius: BorderRadius.circular(AppRadii.lg),
-                  child: Image.network(images.first, height: 260, width: double.infinity, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(height: 260, color: AppColors.surface)),
+                  child: Image.network(images.first,
+                      height: 260,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) =>
+                          Container(height: 260, color: AppColors.surface)),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Row(
                   children: [
-                    Expanded(child: Text(title, style: AppTextStyles.h2.copyWith(fontSize: 20), maxLines: 3, overflow: TextOverflow.ellipsis)),
+                    Expanded(
+                        child: Text(title,
+                            style: AppTextStyles.h2.copyWith(fontSize: 20),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis)),
                     const SizedBox(width: 8),
                     // Keep only single heart here
                     ValueListenableBuilder<bool>(
                       valueListenable: _isSavedNotifier,
                       builder: (_, saved, __) => IconButton(
                         onPressed: () => SavedManager.instance.toggle(data),
-                        icon: Icon(saved ? Icons.favorite : Icons.favorite_border, color: saved ? Colors.red : mutedColor),
+                        icon: Icon(
+                            saved ? Icons.favorite : Icons.favorite_border,
+                            color: saved ? Colors.red : mutedColor),
                       ),
                     )
                   ],
                 ),
                 const SizedBox(height: 6),
-                Text('by $author', style: AppTextStyles.body?.copyWith(fontWeight: FontWeight.w700)),
+                Text('by $author',
+                    style: AppTextStyles.body
+                        ?.copyWith(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 6),
                 GestureDetector(
                   onTap: _scrollToReviews,
@@ -632,22 +800,31 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     children: [
                       const Icon(Icons.star, color: Colors.amber, size: 18),
                       const SizedBox(width: 6),
-                      Text('${rating.toStringAsFixed(1)}/5', style: AppTextStyles.body?.copyWith(fontWeight: FontWeight.w600)),
+                      Text('${rating.toStringAsFixed(1)}/5',
+                          style: AppTextStyles.body
+                              ?.copyWith(fontWeight: FontWeight.w600)),
                       const SizedBox(width: 8),
-                      Text('($reviewsCount reviews)', style: AppTextStyles.caption),
+                      Text('($reviewsCount reviews)',
+                          style: AppTextStyles.caption),
                       const Spacer(),
-                      Text('See reviews', style: AppTextStyles.body?.copyWith(color: mutedColor)),
+                      Text('See reviews',
+                          style:
+                              AppTextStyles.body?.copyWith(color: mutedColor)),
                       const SizedBox(width: 6),
-                      Icon(Icons.arrow_forward_ios, size: 14, color: mutedColor),
+                      Icon(Icons.arrow_forward_ios,
+                          size: 14, color: mutedColor),
                     ],
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                Text(description, style: AppTextStyles.body?.copyWith(fontSize: 15)),
+                Text(description,
+                    style: AppTextStyles.body?.copyWith(fontSize: 15)),
                 const SizedBox(height: AppSpacing.md),
 
                 // Format selector
-                Text('Format / Edition', style: AppTextStyles.body?.copyWith(fontWeight: FontWeight.w600)),
+                Text('Format / Edition',
+                    style: AppTextStyles.body
+                        ?.copyWith(fontWeight: FontWeight.w600)),
                 const SizedBox(height: AppSpacing.sm),
                 Row(
                   children: formats.map((f) {
@@ -657,9 +834,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       child: GestureDetector(
                         onTap: () => setState(() => _selectedFormat = f),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          decoration: BoxDecoration(border: Border.all(color: mutedColor), borderRadius: BorderRadius.circular(8), color: selected ? AppColors.primary : Colors.white),
-                          child: Text(f, style: AppTextStyles.body?.copyWith(color: selected ? Colors.white : AppColors.textPrimary)),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                              border: Border.all(color: mutedColor),
+                              borderRadius: BorderRadius.circular(8),
+                              color:
+                                  selected ? AppColors.primary : Colors.white),
+                          child: Text(f,
+                              style: AppTextStyles.body?.copyWith(
+                                  color: selected
+                                      ? Colors.white
+                                      : AppColors.textPrimary)),
                         ),
                       ),
                     );
@@ -669,7 +855,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 const SizedBox(height: AppSpacing.lg),
                 Row(
                   children: [
-                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Price', style: AppTextStyles.caption), Text('\₹${price.toInt()}', style: AppTextStyles.h2?.copyWith(fontSize: 22))])),
+                    Expanded(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                          Text('Price', style: AppTextStyles.caption),
+                          Text('\₹${price.toInt()}',
+                              style: AppTextStyles.h2?.copyWith(fontSize: 22))
+                        ])),
 
                     const SizedBox(width: 12),
                     // quantity + add button
@@ -679,14 +872,26 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           onTap: () => setState(() {
                             if (_quantity > 1) _quantity--;
                           }),
-                          child: Container(padding: const EdgeInsets.all(6), decoration: BoxDecoration(border: Border.all(color: AppColors.fieldBorder), borderRadius: BorderRadius.circular(6)), child: const Icon(Icons.remove, size: 18)),
+                          child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: AppColors.fieldBorder),
+                                  borderRadius: BorderRadius.circular(6)),
+                              child: const Icon(Icons.remove, size: 18)),
                         ),
                         const SizedBox(width: 8),
                         Text('$_quantity', style: AppTextStyles.body),
                         const SizedBox(width: 8),
                         InkWell(
                           onTap: () => setState(() => _quantity++),
-                          child: Container(padding: const EdgeInsets.all(6), decoration: BoxDecoration(border: Border.all(color: AppColors.fieldBorder), borderRadius: BorderRadius.circular(6)), child: const Icon(Icons.add, size: 18)),
+                          child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: AppColors.fieldBorder),
+                                  borderRadius: BorderRadius.circular(6)),
+                              child: const Icon(Icons.add, size: 18)),
                         ),
                         const SizedBox(width: 12),
                         ConstrainedBox(
@@ -726,13 +931,42 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(children: [Expanded(child: Text('Reviews', style: AppTextStyles.h2.copyWith(fontSize: 20))), const Spacer(), TextButton(onPressed: () {}, child: const Text('Write a review'))]),
+                      Row(children: [
+                        Expanded(
+                            child: Text('Reviews',
+                                style:
+                                    AppTextStyles.h2.copyWith(fontSize: 20))),
+                        const Spacer(),
+                        TextButton(
+                            onPressed: () {},
+                            child: const Text('Write a review'))
+                      ]),
                       const SizedBox(height: AppSpacing.sm),
-                      Row(crossAxisAlignment: CrossAxisAlignment.center, children: [Text(rating.toStringAsFixed(1), style: AppTextStyles.h1.copyWith(fontSize: 26)), const SizedBox(width: AppSpacing.md), Column(crossAxisAlignment: CrossAxisAlignment.start, children: [_buildStars(rating, iconSize: 18), const SizedBox(height: 6), Text('$reviewsCount Ratings', style: AppTextStyles.caption)])]),
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(rating.toStringAsFixed(1),
+                                style: AppTextStyles.h1.copyWith(fontSize: 26)),
+                            const SizedBox(width: AppSpacing.md),
+                            Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildStars(rating, iconSize: 18),
+                                  const SizedBox(height: 6),
+                                  Text('$reviewsCount Ratings',
+                                      style: AppTextStyles.caption)
+                                ])
+                          ]),
                       const SizedBox(height: AppSpacing.md),
                       _ratingBars(accentColor, mutedColor),
                       const SizedBox(height: AppSpacing.md),
-                      ListView.separated(physics: const NeverScrollableScrollPhysics(), shrinkWrap: true, itemCount: _reviews.length, separatorBuilder: (_, __) => const Divider(), itemBuilder: (context, i) => _buildReviewTile(_reviews[i])),
+                      ListView.separated(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: _reviews.length,
+                          separatorBuilder: (_, __) => const Divider(),
+                          itemBuilder: (context, i) =>
+                              _buildReviewTile(_reviews[i])),
                       const SizedBox(height: AppSpacing.xl),
                     ],
                   ),

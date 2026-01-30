@@ -37,12 +37,14 @@ class ProductCard extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         ...List.generate(
-            full, (_) => const Icon(Icons.star, size: 13, color: Colors.amber)),
+          full,
+          (_) => const Icon(Icons.star, size: 13, color: Colors.amber),
+        ),
         if (hasHalf) const Icon(Icons.star_half, size: 13, color: Colors.amber),
         ...List.generate(
-            empty,
-            (_) =>
-                const Icon(Icons.star_border, size: 13, color: Colors.amber)),
+          empty,
+          (_) => const Icon(Icons.star_border, size: 13, color: Colors.amber),
+        ),
       ],
     );
   }
@@ -91,18 +93,24 @@ class ProductCard extends StatelessWidget {
                       errorBuilder: (_, __, ___) => Container(
                         color: AppColors.bg,
                         alignment: Alignment.center,
-                        child: const Icon(Icons.menu_book_rounded,
-                            size: 36, color: AppColors.textSecondary),
+                        child: const Icon(
+                          Icons.menu_book_rounded,
+                          size: 36,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ),
                   ),
+
                   if (showBadge)
                     Positioned(
                       left: 8,
                       top: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.85),
                           borderRadius: BorderRadius.circular(8),
@@ -119,30 +127,40 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                     ),
+
+                  /// ✅ FIXED: Wishlist button now consumes tap
                   Positioned(
                     right: 8,
                     top: 8,
-                    child: GestureDetector(
-                      onTap: () => onSavedChanged?.call(!isSaved),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
+                    child: Material(
+                      color: Colors.transparent,
+                      shape: const CircleBorder(),
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: () {
+                          onSavedChanged?.call(!isSaved);
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
                                 color: Colors.black.withOpacity(0.15),
                                 blurRadius: 8,
-                                offset: const Offset(0, 2)),
-                          ],
-                        ),
-                        child: Icon(
-                          isSaved ? Icons.favorite : Icons.favorite_border,
-                          size: 17,
-                          color: isSaved
-                              ? Colors.red.shade600
-                              : AppColors.textPrimary.withOpacity(0.8),
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            isSaved ? Icons.favorite : Icons.favorite_border,
+                            size: 17,
+                            color: isSaved
+                                ? Colors.red.shade600
+                                : AppColors.textPrimary.withOpacity(0.8),
+                          ),
                         ),
                       ),
                     ),
@@ -183,8 +201,6 @@ class ProductCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       rating!.toStringAsFixed(1),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.caption.copyWith(
                         fontWeight: FontWeight.w600,
                         fontSize: 12,
@@ -201,8 +217,6 @@ class ProductCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     '₹$price',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.body.copyWith(
                       fontWeight: FontWeight.w800,
                       fontSize: 17,
@@ -215,12 +229,16 @@ class ProductCard extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 8),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 3),
+                        horizontal: 6,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.green.shade50,
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
-                            color: Colors.green.shade600, width: 1), // ← VALID
+                          color: Colors.green.shade600,
+                          width: 1,
+                        ),
                       ),
                       child: Text(
                         '-${(discount! * 100).round()}%',
